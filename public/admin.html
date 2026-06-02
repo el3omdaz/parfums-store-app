@@ -4,133 +4,307 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Parfums — لوحة التحكم</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #F5F4F0; font-family: 'Segoe UI', Arial, sans-serif; color: #1A1A1A; min-height: 100vh; font-size: 14px; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:#F0F2F8;color:#1A1A2E;direction:rtl}
 
-  /* Login */
-  .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #1A1714; }
-  .login-box { background: #fff; padding: 48px 40px; width: 360px; box-shadow: 0 8px 40px rgba(0,0,0,0.3); }
-  .login-box h1 { font-size: 28px; color: #1A1714; font-weight: 300; letter-spacing: 0.25em; margin-bottom: 6px; }
-  .login-box p { font-size: 12px; color: #999; letter-spacing: 0.2em; margin-bottom: 32px; }
-  .login-box input { width: 100%; background: #F8F8F6; border: 1px solid #DDD; color: #1A1714; padding: 14px; font-size: 15px; outline: none; margin-bottom: 14px; }
-  .login-box input:focus { border-color: #C8B89A; background: #fff; }
-  .login-box button { width: 100%; background: #1A1714; color: #fff; border: none; padding: 14px; font-size: 13px; letter-spacing: 0.2em; cursor: pointer; transition: opacity 0.2s; }
-  .login-box button:hover { opacity: 0.85; }
-  .err { color: #D32F2F; font-size: 13px; margin-top: 8px; display: none; }
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;right:0;width:240px;height:100vh;background:linear-gradient(180deg,#1A1A2E 0%,#16213E 100%);display:flex;flex-direction:column;z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.15)}
+.sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.brand-name{font-size:22px;font-weight:700;color:#fff;letter-spacing:0.15em}
+.brand-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;letter-spacing:0.1em}
+.sidebar-nav{padding:16px 0;flex:1;overflow-y:auto}
+.nav-section{padding:8px 20px 4px;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.2em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-size:14px;color:rgba(255,255,255,0.6);cursor:pointer;transition:all 0.25s;border-right:3px solid transparent;margin:2px 0}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.07)}
+.nav-item.active{color:#fff;background:rgba(99,102,241,0.2);border-right-color:#6366F1}
+.nav-item .icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,0.07)}
+.nav-item.active .icon{background:linear-gradient(135deg,#6366F1,#8B5CF6)}
+.nav-badge{margin-right:auto;background:#EF4444;color:#fff;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700}
+.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08)}
+.logout-btn{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;padding:10px;border-radius:10px;transition:all 0.2s}
+.logout-btn:hover{color:#EF4444;background:rgba(239,68,68,0.1)}
 
-  /* Layout */
-  .app { display: none; min-height: 100vh; }
-  .sidebar { position: fixed; top: 0; right: 0; width: 220px; height: 100vh; background: #1A1714; display: flex; flex-direction: column; box-shadow: -2px 0 12px rgba(0,0,0,0.15); }
-  .sidebar-logo { padding: 24px 20px; font-size: 20px; color: #C8B89A; letter-spacing: 0.3em; border-bottom: 1px solid #2A2520; }
-  .nav-item { padding: 14px 22px; font-size: 13px; color: #8A8078; cursor: pointer; transition: all 0.2s; border-right: 3px solid transparent; }
-  .nav-item:hover { color: #E0D0B8; background: #221E1A; }
-  .nav-item.active { color: #C8B89A; background: #221E1A; border-right-color: #C8B89A; }
-  .nav-logout { margin-top: auto; padding: 18px 22px; font-size: 13px; color: #5A5450; cursor: pointer; border-top: 1px solid #2A2520; }
-  .nav-logout:hover { color: #E57373; }
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:240px;height:68px;background:#fff;display:flex;align-items:center;padding:0 28px;gap:16px;z-index:99;box-shadow:0 1px 12px rgba(0,0,0,0.06)}
+.topbar-title{font-size:20px;font-weight:700;color:#1A1A2E;flex:1}
+.topbar-search{flex:1;max-width:320px;background:#F0F2F8;border-radius:12px;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.topbar-search input{border:none;background:transparent;outline:none;font-family:'Tajawal',sans-serif;font-size:14px;color:#555;width:100%}
+.topbar-search input::placeholder{color:#AAA}
+.topbar-actions{display:flex;align-items:center;gap:12px}
+.action-btn{width:40px;height:40px;border-radius:12px;background:#F0F2F8;border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:#666;position:relative;transition:all 0.2s}
+.action-btn:hover{background:#E8EAFE;color:#6366F1}
+.action-badge{position:absolute;top:4px;right:4px;width:16px;height:16px;background:#EF4444;border-radius:50%;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.admin-info{display:flex;align-items:center;gap:10px;background:#F8F9FF;border-radius:12px;padding:8px 14px;cursor:pointer}
+.admin-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+.admin-name{font-size:13px;font-weight:600;color:#1A1A2E}
+.admin-role{font-size:11px;color:#999}
 
-  .main { margin-right: 220px; padding: 28px 32px; }
-  .page-title { font-size: 20px; color: #1A1714; letter-spacing: 0.1em; margin-bottom: 24px; font-weight: 400; border-bottom: 2px solid #C8B89A; padding-bottom: 12px; display: inline-block; }
+/* MAIN */
+.main{margin-right:240px;margin-top:68px;padding:28px;min-height:calc(100vh - 68px)}
 
-  /* Stats */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-  .stat { background: #fff; border: 1px solid #E8E4DC; padding: 20px; border-radius: 2px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .stat-num { font-size: 36px; color: #C8B89A; font-weight: 300; margin-bottom: 6px; }
-  .stat-lbl { font-size: 12px; color: #999; letter-spacing: 0.15em; text-transform: uppercase; }
+/* WELCOME */
+.welcome-card{background:linear-gradient(135deg,#6366F1 0%,#8B5CF6 50%,#A78BFA 100%);border-radius:20px;padding:28px 32px;color:#fff;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;position:relative;overflow:hidden}
+.welcome-card::before{content:'';position:absolute;top:-40px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.07)}
+.welcome-card::after{content:'';position:absolute;bottom:-60px;left:60px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.05)}
+.welcome-text h2{font-size:26px;font-weight:700;margin-bottom:6px}
+.welcome-text p{font-size:14px;opacity:0.8}
+.welcome-date{font-size:13px;opacity:0.7;background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:10px}
 
-  /* Card */
-  .card { background: #fff; border: 1px solid #E8E4DC; margin-bottom: 20px; border-radius: 2px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); overflow: hidden; }
-  .card-hdr { padding: 14px 20px; border-bottom: 1px solid #EEE; font-size: 13px; color: #666; display: flex; justify-content: space-between; align-items: center; background: #FAFAF8; }
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,0.05);transition:transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,0.1)}
+.stat-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.stat-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.stat-icon.purple{background:linear-gradient(135deg,#6366F1,#8B5CF6)}
+.stat-icon.green{background:linear-gradient(135deg,#10B981,#34D399)}
+.stat-icon.orange{background:linear-gradient(135deg,#F59E0B,#FCD34D)}
+.stat-icon.red{background:linear-gradient(135deg,#EF4444,#F87171)}
+.stat-trend{font-size:12px;font-weight:600;padding:4px 8px;border-radius:8px}
+.stat-trend.up{background:#ECFDF5;color:#059669}
+.stat-trend.down{background:#FEF2F2;color:#DC2626}
+.stat-value{font-size:32px;font-weight:700;color:#1A1A2E;margin-bottom:4px}
+.stat-label{font-size:13px;color:#94A3B8}
+.stat-chart{margin-top:12px;height:40px}
 
-  /* Table */
-  table { width: 100%; border-collapse: collapse; }
-  th { padding: 12px 20px; text-align: right; font-size: 11px; color: #999; font-weight: 600; letter-spacing: 0.15em; border-bottom: 2px solid #EEE; background: #FAFAF8; text-transform: uppercase; }
-  td { padding: 13px 20px; text-align: right; font-size: 14px; color: #333; border-bottom: 1px solid #F0EDE8; }
-  tr:hover td { background: #FDFCFA; }
+/* CHARTS ROW */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.chart-card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,0.05)}
+.chart-card.wide{grid-column:span 2}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.chart-title{font-size:16px;font-weight:700;color:#1A1A2E}
+.chart-filter{background:#F0F2F8;border:none;border-radius:8px;padding:6px 12px;font-size:12px;color:#666;cursor:pointer;font-family:'Tajawal',sans-serif}
 
-  /* Badges */
-  .badge { display: inline-block; padding: 4px 10px; font-size: 11px; letter-spacing: 0.08em; border-radius: 2px; font-weight: 500; }
-  .badge-pending { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
-  .badge-confirmed { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
-  .badge-preparing { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
-  .badge-shipped { background: #E0F7FA; color: #00695C; border: 1px solid #80DEEA; }
-  .badge-delivered { background: #F1F8E9; color: #33691E; border: 1px solid #C5E1A5; }
-  .badge-cancelled { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
+/* TABLE CARD */
+.table-card{background:#fff;border-radius:16px;padding:22px;box-shadow:0 2px 12px rgba(0,0,0,0.05);margin-bottom:20px}
+.table-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.table-title{font-size:16px;font-weight:700;color:#1A1A2E}
+.table-actions{display:flex;gap:10px;align-items:center}
+.filter-select{background:#F0F2F8;border:none;border-radius:10px;padding:8px 14px;font-size:13px;color:#555;cursor:pointer;font-family:'Tajawal',sans-serif;outline:none}
+.add-btn{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:'Tajawal',sans-serif;font-weight:600;transition:opacity 0.2s}
+.add-btn:hover{opacity:0.85}
 
-  /* Buttons */
-  .btn { background: none; border: 1px solid #D32F2F; color: #D32F2F; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: all 0.2s; border-radius: 2px; }
-  .btn:hover { background: #D32F2F; color: #fff; }
-  .btn-green { border-color: #2E7D32; color: #2E7D32; }
-  .btn-green:hover { background: #2E7D32; color: #fff; }
+table{width:100%;border-collapse:collapse}
+thead th{padding:12px 16px;text-align:right;font-size:12px;color:#94A3B8;font-weight:600;letter-spacing:0.05em;border-bottom:2px solid #F1F5F9}
+tbody td{padding:14px 16px;text-align:right;font-size:14px;color:#334155;border-bottom:1px solid #F8FAFC}
+tbody tr:hover td{background:#F8F9FF}
+tbody tr:last-child td{border-bottom:none}
 
-  /* Form */
-  .form-group { margin-bottom: 20px; }
-  .form-label { font-size: 12px; color: #666; letter-spacing: 0.15em; margin-bottom: 8px; display: block; text-transform: uppercase; font-weight: 600; }
-  .form-input { background: #F8F8F6; border: 1px solid #DDD; color: #1A1714; padding: 10px 14px; font-size: 15px; outline: none; border-radius: 2px; }
-  .form-input:focus { border-color: #C8B89A; background: #fff; }
-  .save-btn { background: #1A1714; color: #fff; border: none; padding: 10px 20px; font-size: 12px; letter-spacing: 0.15em; cursor: pointer; margin-right: 10px; margin-top: 8px; border-radius: 2px; transition: opacity 0.2s; }
-  .save-btn:hover { opacity: 0.8; }
+.badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%}
+.badge-pending{background:#FFF7ED;color:#C2410C}.badge-pending::before{background:#F97316}
+.badge-confirmed{background:#F0FDF4;color:#166534}.badge-confirmed::before{background:#22C55E}
+.badge-preparing{background:#EFF6FF;color:#1D4ED8}.badge-preparing::before{background:#3B82F6}
+.badge-shipped{background:#F0FDFA;color:#0F766E}.badge-shipped::before{background:#14B8A6}
+.badge-delivered{background:#F7FEE7;color:#3F6212}.badge-delivered::before{background:#84CC16}
+.badge-cancelled{background:#FEF2F2;color:#991B1B}.badge-cancelled::before{background:#EF4444}
+.badge-active{background:#F0FDF4;color:#166534}.badge-active::before{background:#22C55E}
+.badge-blocked{background:#FEF2F2;color:#991B1B}.badge-blocked::before{background:#EF4444}
 
-  select.filter { background: #fff; border: 1px solid #DDD; color: #555; padding: 7px 12px; font-size: 13px; outline: none; cursor: pointer; border-radius: 2px; }
+.action-icon{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;font-size:15px;display:inline-flex;align-items:center;justify-content:center;transition:all 0.2s;margin:0 2px}
+.action-icon.view{background:#EFF6FF;color:#3B82F6}.action-icon.view:hover{background:#3B82F6;color:#fff}
+.action-icon.block{background:#FEF2F2;color:#EF4444}.action-icon.block:hover{background:#EF4444;color:#fff}
+.action-icon.unblock{background:#F0FDF4;color:#22C55E}.action-icon.unblock:hover{background:#22C55E;color:#fff}
+.action-icon.hide{background:#FFF7ED;color:#F97316}.action-icon.hide:hover{background:#F97316;color:#fff}
 
-  /* Sections */
-  .section { display: none; }
-  .section.active { display: block; }
+.empty-state{padding:48px;text-align:center;color:#CBD5E1}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px;display:block}
+.empty-state p{font-size:14px}
 
-  .empty { padding: 48px; text-align: center; color: #BBB; font-size: 14px; letter-spacing: 0.15em; }
-  .loading { padding: 28px; text-align: center; color: #AAA; font-size: 14px; }
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.setting-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.05)}
+.setting-title{font-size:16px;font-weight:700;color:#1A1A2E;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #F1F5F9}
+.setting-group{margin-bottom:16px}
+.setting-label{font-size:13px;color:#64748B;margin-bottom:6px;display:block;font-weight:500}
+.setting-input{width:100%;background:#F8FAFC;border:1.5px solid #E2E8F0;color:#1A1A2E;padding:10px 14px;font-size:15px;outline:none;border-radius:10px;font-family:'Tajawal',sans-serif;transition:border-color 0.2s}
+.setting-input:focus{border-color:#6366F1;background:#fff}
+.setting-save{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;border:none;padding:10px 22px;font-size:14px;cursor:pointer;border-radius:10px;font-family:'Tajawal',sans-serif;font-weight:600;margin-top:8px;transition:opacity 0.2s}
+.setting-save:hover{opacity:0.85}
+
+/* SECTIONS */
+.section{display:none}.section.active{display:block}
+
+/* LOGIN */
+.login-wrap{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#1A1A2E 0%,#16213E 50%,#0F3460 100%);align-items:center;justify-content:center;z-index:999}
+.login-wrap.show{display:flex}
+.login-box{background:#fff;border-radius:24px;padding:48px 40px;width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.3)}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo h1{font-size:32px;font-weight:700;background:linear-gradient(135deg,#6366F1,#8B5CF6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:0.15em}
+.login-logo p{font-size:13px;color:#94A3B8;margin-top:4px}
+.login-label{font-size:13px;color:#64748B;margin-bottom:6px;display:block;font-weight:600}
+.login-input{width:100%;background:#F8FAFC;border:2px solid #E2E8F0;color:#1A1A2E;padding:14px;font-size:16px;outline:none;border-radius:12px;font-family:'Tajawal',sans-serif;margin-bottom:16px;transition:all 0.2s}
+.login-input:focus{border-color:#6366F1;background:#fff;box-shadow:0 0 0 4px rgba(99,102,241,0.1)}
+.login-btn{width:100%;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;border:none;padding:15px;font-size:16px;font-weight:700;cursor:pointer;border-radius:12px;font-family:'Tajawal',sans-serif;transition:opacity 0.2s}
+.login-btn:hover{opacity:0.9}
+.login-err{color:#EF4444;font-size:13px;margin-top:6px;display:none;text-align:center}
+
+/* ACTIVITY */
+.activity-list{list-style:none}
+.activity-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #F1F5F9}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.activity-text{flex:1}
+.activity-text strong{font-size:13px;color:#1A1A2E;display:block}
+.activity-text span{font-size:12px;color:#94A3B8}
+
+/* LOADING */
+.skeleton{background:linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;height:20px;margin-bottom:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.donut-center{position:relative}
 </style>
 </head>
 <body>
 
-<!-- Login -->
-<div class="login-wrap" id="loginWrap">
+<!-- LOGIN -->
+<div class="login-wrap show" id="loginWrap">
   <div class="login-box">
-    <h1>Parfums</h1>
-    <p>ADMIN PANEL</p>
-    <input type="password" id="pwdInput" placeholder="كلمة السر" onkeydown="if(event.key==='Enter') doLogin()">
-    <button onclick="doLogin()">دخول</button>
-    <p class="err" id="loginErr">كلمة السر غير صحيحة</p>
+    <div class="login-logo">
+      <h1>Parfums</h1>
+      <p>لوحة إدارة المتجر</p>
+    </div>
+    <label class="login-label">كلمة السر</label>
+    <input class="login-input" type="password" id="pwdInput" placeholder="أدخل كلمة السر..." onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">🔐 تسجيل الدخول</button>
+    <p class="login-err" id="loginErr">❌ كلمة السر غير صحيحة</p>
   </div>
 </div>
 
-<!-- Dashboard -->
-<div class="app" id="appWrap">
-  <div class="sidebar">
-    <div class="sidebar-logo">Parfums</div>
-    <div class="nav-item active" onclick="showSection('dash', this)">الرئيسية</div>
-    <div class="nav-item" onclick="showSection('orders', this)">الطلبات</div>
-    <div class="nav-item" onclick="showSection('custom', this)">الطلبات المخصصة</div>
-    <div class="nav-item" onclick="showSection('users', this)">المستخدمين</div>
-    <div class="nav-item" onclick="showSection('products', this)">المنتجات</div>
-    <div class="nav-item" onclick="showSection('settings', this)">الإعدادات</div>
-    <div class="nav-logout" onclick="doLogout()">تسجيل خروج</div>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar" style="display:none">
+  <div class="sidebar-brand">
+    <div class="brand-name">✦ Parfums</div>
+    <div class="brand-sub">لوحة إدارة المتجر</div>
   </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">القائمة الرئيسية</div>
+    <div class="nav-item active" onclick="showSection('dash',this)">
+      <div class="icon">🏠</div> الرئيسية
+    </div>
+    <div class="nav-item" onclick="showSection('orders',this)">
+      <div class="icon">🛍️</div> الطلبات
+      <span class="nav-badge" id="pendingBadge">0</span>
+    </div>
+    <div class="nav-item" onclick="showSection('custom',this)">
+      <div class="icon">✨</div> الطلبات المخصصة
+    </div>
+    <div class="nav-section">الإدارة</div>
+    <div class="nav-item" onclick="showSection('users',this)">
+      <div class="icon">👥</div> المستخدمين
+    </div>
+    <div class="nav-item" onclick="showSection('products',this)">
+      <div class="icon">🌸</div> المنتجات
+    </div>
+    <div class="nav-section">النظام</div>
+    <div class="nav-item" onclick="showSection('settings',this)">
+      <div class="icon">⚙️</div> الإعدادات
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="logout-btn" onclick="doLogout()">
+      <span>🚪</span> تسجيل الخروج
+    </div>
+  </div>
+</div>
 
-  <div class="main">
+<!-- TOPBAR -->
+<div class="topbar" id="topbar" style="display:none">
+  <div class="topbar-title" id="pageTitle">الرئيسية</div>
+  <div class="topbar-search">
+    <span>🔍</span>
+    <input type="text" placeholder="ابحث هنا...">
+  </div>
+  <div class="topbar-actions">
+    <button class="action-btn" title="إشعارات"><span>🔔</span><span class="action-badge" id="notifBadge">0</span></button>
+    <div class="admin-info">
+      <div class="admin-avatar">م</div>
+      <div><div class="admin-name">المدير</div><div class="admin-role">مدير النظام</div></div>
+    </div>
+  </div>
+</div>
 
-    <!-- Dashboard -->
-    <div class="section active" id="sec-dash">
-      <div class="page-title">لوحة التحكم</div>
-      <div class="stats">
-        <div class="stat"><div class="stat-num" id="statOrders">—</div><div class="stat-lbl">إجمالي الطلبات</div></div>
-        <div class="stat"><div class="stat-num" id="statPending">—</div><div class="stat-lbl">طلبات معلقة</div></div>
-        <div class="stat"><div class="stat-num" id="statUsers">—</div><div class="stat-lbl">المستخدمين</div></div>
-        <div class="stat"><div class="stat-num" id="statRevenue">—</div><div class="stat-lbl">الإيرادات KD</div></div>
+<!-- MAIN -->
+<div class="main" id="mainContent" style="display:none">
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="sec-dash">
+    <div class="welcome-card">
+      <div class="welcome-text">
+        <h2>👋 مرحباً بك في لوحة التحكم</h2>
+        <p>إليك نظرة عامة على أداء متجرك اليوم</p>
       </div>
-      <div class="card">
-        <div class="card-hdr">آخر الطلبات</div>
-        <div id="recentOrders"><div class="loading">جاري التحميل...</div></div>
+      <div class="welcome-date" id="todayDate"></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon purple">🛍️</div>
+          <span class="stat-trend up" id="trendOrders">+0%</span>
+        </div>
+        <div class="stat-value" id="statOrders">0</div>
+        <div class="stat-label">إجمالي الطلبات</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon green">💰</div>
+          <span class="stat-trend up">KD</span>
+        </div>
+        <div class="stat-value" id="statRevenue">0.000</div>
+        <div class="stat-label">إجمالي الإيرادات</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon orange">👥</div>
+          <span class="stat-trend up" id="trendUsers">+0</span>
+        </div>
+        <div class="stat-value" id="statUsers">0</div>
+        <div class="stat-label">المستخدمين</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon red">⏳</div>
+          <span class="stat-trend down" id="trendPending">معلقة</span>
+        </div>
+        <div class="stat-value" id="statPending">0</div>
+        <div class="stat-label">طلبات معلقة</div>
       </div>
     </div>
 
-    <!-- Orders -->
-    <div class="section" id="sec-orders">
-      <div class="page-title">الطلبات</div>
-      <div class="card">
-        <div class="card-hdr">
-          جميع الطلبات
-          <select class="filter" onchange="loadOrders(this.value)">
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">📊 إحصائيات الطلبات</div>
+        </div>
+        <canvas id="ordersChart" height="200"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">🍩 توزيع الطلبات</div>
+        </div>
+        <canvas id="statusChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">📋 آخر الطلبات</div>
+      </div>
+      <div id="recentOrders"><div class="empty-state"><span class="empty-icon">📦</span><p>جاري التحميل...</p></div></div>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="section" id="sec-orders">
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">🛍️ جميع الطلبات</div>
+        <div class="table-actions">
+          <select class="filter-select" onchange="loadOrders(this.value)">
             <option value="">الكل</option>
             <option value="pending">معلق</option>
             <option value="confirmed">مؤكد</option>
@@ -140,99 +314,101 @@
             <option value="cancelled">ملغي</option>
           </select>
         </div>
-        <div id="ordersTable"><div class="loading">جاري التحميل...</div></div>
       </div>
+      <div id="ordersTable"><div class="empty-state"><span class="empty-icon">🛍️</span><p>جاري التحميل...</p></div></div>
     </div>
+  </div>
 
-    <!-- Custom Requests -->
-    <div class="section" id="sec-custom">
-      <div class="page-title">الطلبات المخصصة</div>
-      <div class="card">
-        <div class="card-hdr">طلبات العطور المخصصة</div>
-        <div id="customTable"><div class="loading">جاري التحميل...</div></div>
+  <!-- CUSTOM -->
+  <div class="section" id="sec-custom">
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">✨ الطلبات المخصصة</div>
       </div>
+      <div id="customTable"><div class="empty-state"><span class="empty-icon">✨</span><p>جاري التحميل...</p></div></div>
     </div>
+  </div>
 
-    <!-- Users -->
-    <div class="section" id="sec-users">
-      <div class="page-title">المستخدمين</div>
-      <div class="card">
-        <div class="card-hdr">قائمة المستخدمين</div>
-        <div id="usersTable"><div class="loading">جاري التحميل...</div></div>
+  <!-- USERS -->
+  <div class="section" id="sec-users">
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">👥 المستخدمين</div>
       </div>
+      <div id="usersTable"><div class="empty-state"><span class="empty-icon">👥</span><p>جاري التحميل...</p></div></div>
     </div>
+  </div>
 
-    <!-- Products -->
-    <div class="section" id="sec-products">
-      <div class="page-title">المنتجات</div>
-      <div class="card">
-        <div class="card-hdr">قائمة المنتجات</div>
-        <div id="productsTable"><div class="loading">جاري التحميل...</div></div>
+  <!-- PRODUCTS -->
+  <div class="section" id="sec-products">
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">🌸 المنتجات</div>
       </div>
+      <div id="productsTable"><div class="empty-state"><span class="empty-icon">🌸</span><p>جاري التحميل...</p></div></div>
     </div>
+  </div>
 
-    <!-- Settings -->
-    <div class="section" id="sec-settings">
-      <div class="page-title">الإعدادات</div>
-      <div class="card">
-        <div class="card-hdr">الأسعار</div>
-        <div style="padding: 24px;">
-          <div class="form-group">
-            <label class="form-label">السعر الموحد للعطر (KD)</label>
-            <input class="form-input" id="standard_price" type="number" step="0.001" value="4.000">
-            <button class="save-btn" style="margin-top:8px" onclick="saveCfg('standard_price')">حفظ</button>
-          </div>
-          <div class="form-group">
-            <label class="form-label">سعر التوصيل العادي (KD)</label>
-            <input class="form-input" id="delivery_price" type="number" step="0.001" value="2.000">
-            <button class="save-btn" style="margin-top:8px" onclick="saveCfg('delivery_price')">حفظ</button>
-          </div>
-          <div class="form-group">
-            <label class="form-label">سعر التوصيل المناطق البعيدة (KD)</label>
-            <input class="form-input" id="delivery_price_far" type="number" step="0.001" value="3.000">
-            <button class="save-btn" style="margin-top:8px" onclick="saveCfg('delivery_price_far')">حفظ</button>
-          </div>
+  <!-- SETTINGS -->
+  <div class="section" id="sec-settings">
+    <div class="settings-grid">
+      <div class="setting-card">
+        <div class="setting-title">💰 إعدادات الأسعار</div>
+        <div class="setting-group">
+          <label class="setting-label">السعر الموحد للعطر (KD)</label>
+          <input class="setting-input" id="standard_price" type="number" step="0.001" value="4.000">
+          <button class="setting-save" onclick="saveCfg('standard_price')">حفظ التغييرات</button>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label">سعر التوصيل العادي (KD)</label>
+          <input class="setting-input" id="delivery_price" type="number" step="0.001" value="2.000">
+          <button class="setting-save" onclick="saveCfg('delivery_price')">حفظ التغييرات</button>
+        </div>
+        <div class="setting-group">
+          <label class="setting-label">توصيل المناطق البعيدة (KD)</label>
+          <input class="setting-input" id="delivery_price_far" type="number" step="0.001" value="3.000">
+          <button class="setting-save" onclick="saveCfg('delivery_price_far')">حفظ التغييرات</button>
+        </div>
+      </div>
+      <div class="setting-card">
+        <div class="setting-title">📦 حجم العطر الموحد</div>
+        <div class="setting-group">
+          <label class="setting-label">الحجم الافتراضي (مل)</label>
+          <input class="setting-input" id="default_size" type="number" value="50">
+          <button class="setting-save" onclick="saveCfg('default_size')">حفظ التغييرات</button>
         </div>
       </div>
     </div>
-
   </div>
+
 </div>
 
 <script>
 var TOKEN = localStorage.getItem('admin_token');
-var STATUS_LABELS = {
-  pending: 'معلق', confirmed: 'مؤكد', preparing: 'قيد التحضير',
-  shipped: 'تم الشحن', delivered: 'تم التوصيل', cancelled: 'ملغي'
-};
+var SL = {pending:'معلق',confirmed:'مؤكد',preparing:'قيد التحضير',shipped:'تم الشحن',delivered:'تم التوصيل',cancelled:'ملغي'};
+var ordersChartInst = null;
+var statusChartInst = null;
 
-// Init
-if (TOKEN) showApp();
+// DATE
+document.getElementById('todayDate').textContent = new Date().toLocaleDateString('ar-KW', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+if(TOKEN) showApp();
 
 async function doLogin() {
   var pwd = document.getElementById('pwdInput').value;
   try {
-    var r = await fetch('/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwd })
-    });
+    var r = await fetch('/admin/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd})});
     var d = await r.json();
-    if (d.success) {
-      TOKEN = d.token;
-      localStorage.setItem('admin_token', TOKEN);
-      showApp();
-    } else {
-      document.getElementById('loginErr').style.display = 'block';
-    }
-  } catch (e) {
-    document.getElementById('loginErr').style.display = 'block';
-  }
+    if(d.success) { TOKEN = d.token; localStorage.setItem('admin_token',TOKEN); showApp(); }
+    else { document.getElementById('loginErr').style.display='block'; }
+  } catch(e) { document.getElementById('loginErr').style.display='block'; }
 }
 
 function showApp() {
-  document.getElementById('loginWrap').style.display = 'none';
-  document.getElementById('appWrap').style.display = 'flex';
+  document.getElementById('loginWrap').classList.remove('show');
+  document.getElementById('sidebar').style.display='flex';
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('mainContent').style.display='block';
   loadDash();
 }
 
@@ -243,143 +419,174 @@ function doLogout() {
 }
 
 function showSection(id, el) {
-  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
   el.classList.add('active');
-  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
-  document.getElementById('sec-' + id).classList.add('active');
-  if (id === 'orders') loadOrders('');
-  else if (id === 'users') loadUsers();
-  else if (id === 'products') loadProducts();
-  else if (id === 'custom') loadCustom();
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('sec-'+id).classList.add('active');
+  var titles = {dash:'الرئيسية',orders:'الطلبات',custom:'الطلبات المخصصة',users:'المستخدمين',products:'المنتجات',settings:'الإعدادات'};
+  document.getElementById('pageTitle').textContent = titles[id];
+  if(id==='orders') loadOrders('');
+  else if(id==='users') loadUsers();
+  else if(id==='products') loadProducts();
+  else if(id==='custom') loadCustom();
 }
 
 async function api(url, opts) {
-  var r = await fetch(url, Object.assign({ headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN } }, opts || {}));
+  var r = await fetch(url, Object.assign({headers:{'Content-Type':'application/json','x-admin-token':TOKEN}}, opts||{}));
   return r.json();
 }
 
-function statusBadge(s) {
-  return '<span class="badge badge-' + s + '">' + (STATUS_LABELS[s] || s) + '</span>';
+function badge(s) {
+  return '<span class="badge badge-'+s+'">'+(SL[s]||s)+'</span>';
 }
 
-function statusSelect(orderId, current) {
-  var opts = Object.keys(STATUS_LABELS).map(function(v) {
-    return '<option value="' + v + '"' + (current === v ? ' selected' : '') + '>' + STATUS_LABELS[v] + '</option>';
-  }).join('');
-  return '<select class="filter" onchange="updateOrder(\'' + orderId + '\', this.value)">' + opts + '</select>';
+function statusSel(id, cur) {
+  var opts = Object.keys(SL).map(function(v){ return '<option value="'+v+'"'+(cur===v?' selected':'')+'>'+SL[v]+'</option>'; }).join('');
+  return '<select class="filter-select" style="padding:6px 10px;font-size:12px" onchange="updateOrder(\''+id+'\',this.value)">'+opts+'</select>';
 }
 
-// Dashboard
 async function loadDash() {
   var oRes = await api('/admin/api/orders');
   var uRes = await api('/admin/api/users');
   var orders = oRes.orders || [];
   var users = uRes.users || [];
+  var pending = orders.filter(function(o){return o.status==='pending';}).length;
+  var rev = orders.reduce(function(s,o){return s+parseFloat(o.total||0);},0);
 
   document.getElementById('statOrders').textContent = orders.length;
-  document.getElementById('statPending').textContent = orders.filter(function(o) { return o.status === 'pending'; }).length;
-  document.getElementById('statUsers').textContent = users.length;
-  var rev = orders.reduce(function(s, o) { return s + parseFloat(o.total || 0); }, 0);
   document.getElementById('statRevenue').textContent = rev.toFixed(3);
+  document.getElementById('statUsers').textContent = users.length;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('notifBadge').textContent = pending;
+  document.getElementById('pendingBadge').textContent = pending;
 
-  var rows = orders.slice(0, 8).map(function(o) {
-    return '<tr><td>#' + (o.id || '').slice(0, 8) + '</td>'
-      + '<td>' + ((o.users && o.users.phone) || '—') + '</td>'
-      + '<td>' + (o.total || 0) + ' KD</td>'
-      + '<td>' + statusBadge(o.status) + '</td>'
-      + '<td>' + (o.created_at || '').slice(0, 10) + '</td></tr>';
+  // Status counts for donut
+  var counts = {};
+  Object.keys(SL).forEach(function(k){counts[k]=0;});
+  orders.forEach(function(o){if(counts[o.status]!==undefined)counts[o.status]++;});
+
+  // Orders bar chart
+  var ctx1 = document.getElementById('ordersChart').getContext('2d');
+  if(ordersChartInst) ordersChartInst.destroy();
+  ordersChartInst = new Chart(ctx1, {
+    type:'bar',
+    data:{
+      labels:Object.keys(SL).map(function(k){return SL[k];}),
+      datasets:[{data:Object.keys(SL).map(function(k){return counts[k];}),backgroundColor:['#F97316','#22C55E','#3B82F6','#14B8A6','#84CC16','#EF4444'],borderRadius:8,borderSkipped:false}]
+    },
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#F1F5F9'}},x:{grid:{display:false}}},responsive:true,maintainAspectRatio:false}
+  });
+
+  // Donut
+  var ctx2 = document.getElementById('statusChart').getContext('2d');
+  if(statusChartInst) statusChartInst.destroy();
+  statusChartInst = new Chart(ctx2, {
+    type:'doughnut',
+    data:{
+      labels:Object.keys(SL).map(function(k){return SL[k];}),
+      datasets:[{data:Object.keys(SL).map(function(k){return counts[k]||0;}),backgroundColor:['#F97316','#22C55E','#3B82F6','#14B8A6','#84CC16','#EF4444'],borderWidth:0,hoverOffset:8}]
+    },
+    options:{plugins:{legend:{position:'bottom',labels:{font:{family:'Tajawal',size:12},padding:12}}},cutout:'65%',responsive:true,maintainAspectRatio:false}
+  });
+
+  // Recent orders table
+  var rows = orders.slice(0,6).map(function(o){
+    return '<tr><td><strong>#'+(o.id||'').slice(0,8)+'</strong></td>'
+      +'<td>'+(o.users&&o.users.phone||'—')+'</td>'
+      +'<td>'+(o.total||0)+' KD</td>'
+      +'<td>'+badge(o.status)+'</td>'
+      +'<td>'+(o.created_at||'').slice(0,10)+'</td></tr>';
   }).join('');
-
   document.getElementById('recentOrders').innerHTML = rows
-    ? '<table><thead><tr><th>رقم</th><th>هاتف</th><th>مبلغ</th><th>حالة</th><th>تاريخ</th></tr></thead><tbody>' + rows + '</tbody></table>'
-    : '<div class="empty">لا توجد طلبات</div>';
+    ? '<table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    : '<div class="empty-state"><span class="empty-icon">📦</span><p>لا توجد طلبات بعد</p></div>';
 }
 
-// Orders
 async function loadOrders(status) {
-  var url = '/admin/api/orders' + (status ? '?status=' + status : '');
+  var url = '/admin/api/orders'+(status?'?status='+status:'');
   var d = await api(url);
-  var orders = d.orders || [];
-  var rows = orders.map(function(o) {
-    return '<tr><td>#' + (o.id || '').slice(0, 8) + '</td>'
-      + '<td>' + ((o.users && o.users.phone) || '—') + '</td>'
-      + '<td>' + ((o.items || []).length) + ' منتج</td>'
-      + '<td>' + (o.total || 0) + ' KD</td>'
-      + '<td>' + statusSelect(o.id, o.status) + '</td></tr>';
+  var orders = d.orders||[];
+  var rows = orders.map(function(o){
+    return '<tr><td><strong>#'+(o.id||'').slice(0,8)+'</strong></td>'
+      +'<td>'+(o.users&&o.users.phone||'—')+'</td>'
+      +'<td>'+((o.items||[]).length)+' منتج</td>'
+      +'<td>'+(o.total||0)+' KD</td>'
+      +'<td>'+statusSel(o.id,o.status)+'</td></tr>';
   }).join('');
   document.getElementById('ordersTable').innerHTML = rows
-    ? '<table><thead><tr><th>رقم</th><th>هاتف</th><th>المنتجات</th><th>مبلغ</th><th>حالة</th></tr></thead><tbody>' + rows + '</tbody></table>'
-    : '<div class="empty">لا توجد طلبات</div>';
+    ? '<table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>المنتجات</th><th>المبلغ</th><th>الحالة</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    : '<div class="empty-state"><span class="empty-icon">🛍️</span><p>لا توجد طلبات</p></div>';
 }
 
-// Users
 async function loadUsers() {
   var d = await api('/admin/api/users');
-  var users = d.users || [];
-  var rows = users.map(function(u) {
+  var users = d.users||[];
+  var rows = users.map(function(u){
     var blocked = u.is_blocked;
-    return '<tr><td>' + u.phone + '</td>'
-      + '<td>' + (u.created_at || '').slice(0, 10) + '</td>'
-      + '<td>' + (u.last_login ? u.last_login.slice(0, 10) : '—') + '</td>'
-      + '<td style="color:' + (blocked ? '#C85050' : '#50C878') + '">' + (blocked ? 'محظور' : 'نشط') + '</td>'
-      + '<td><button class="btn ' + (blocked ? 'btn-green' : '') + '" onclick="toggleBlock(\'' + u.id + '\', ' + !blocked + ')">' + (blocked ? 'فك الحظر' : 'حظر') + '</button></td></tr>';
+    return '<tr><td>'+u.phone+'</td>'
+      +'<td>'+(u.created_at||'').slice(0,10)+'</td>'
+      +'<td>'+(u.last_login?(u.last_login.slice(0,10)):'—')+'</td>'
+      +'<td>'+badge(blocked?'blocked':'active')+'</td>'
+      +'<td>'
+      +'<button class="action-icon '+(blocked?'unblock':'block')+'" onclick="toggleBlock(\''+u.id+'\','+!blocked+')" title="'+(blocked?'فك الحظر':'حظر')+'">'+(blocked?'✅':'🚫')+'</button>'
+      +'</td></tr>';
   }).join('');
   document.getElementById('usersTable').innerHTML = rows
-    ? '<table><thead><tr><th>هاتف</th><th>تسجيل</th><th>آخر دخول</th><th>حالة</th><th>إجراء</th></tr></thead><tbody>' + rows + '</tbody></table>'
-    : '<div class="empty">لا يوجد مستخدمين</div>';
+    ? '<table><thead><tr><th>رقم الهاتف</th><th>تاريخ التسجيل</th><th>آخر دخول</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    : '<div class="empty-state"><span class="empty-icon">👥</span><p>لا يوجد مستخدمين</p></div>';
 }
 
-// Products
 async function loadProducts() {
   var d = await api('/admin/api/products');
-  var products = d.products || [];
-  var rows = products.map(function(p) {
-    return '<tr><td>' + p.name + '</td>'
-      + '<td>' + (p.brand || '—') + '</td>'
-      + '<td>' + (p.is_privee ? (p.price + ' KD') : '4.000 KD') + '</td>'
-      + '<td style="color:' + (p.is_active ? '#50C878' : '#C85050') + '">' + (p.is_active ? 'نشط' : 'مخفي') + '</td>'
-      + '<td><button class="btn" onclick="toggleProduct(\'' + p.id + '\', ' + !p.is_active + ')">' + (p.is_active ? 'إخفاء' : 'إظهار') + '</button></td></tr>';
+  var products = d.products||[];
+  var rows = products.map(function(p){
+    return '<tr><td><strong>'+p.name+'</strong></td>'
+      +'<td>'+(p.brand||'—')+'</td>'
+      +'<td>'+(p.is_privee?'Collection Privée':(p.origin==='fr'?'🇫🇷 فرنسية':'🌙 عربية'))+'</td>'
+      +'<td>'+(p.is_privee?(p.price+' KD'):'4.000 KD')+'</td>'
+      +'<td>'+badge(p.is_active?'active':'cancelled')+'</td>'
+      +'<td>'
+      +'<button class="action-icon hide" onclick="toggleProduct(\''+p.id+'\','+!p.is_active+')" title="'+(p.is_active?'إخفاء':'إظهار')+'">'+(p.is_active?'👁️':'🙈')+'</button>'
+      +'</td></tr>';
   }).join('');
   document.getElementById('productsTable').innerHTML = rows
-    ? '<table><thead><tr><th>الاسم</th><th>الماركة</th><th>السعر</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>' + rows + '</tbody></table>'
-    : '<div class="empty">لا توجد منتجات</div>';
+    ? '<table><thead><tr><th>الاسم</th><th>الماركة</th><th>النوع</th><th>السعر</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    : '<div class="empty-state"><span class="empty-icon">🌸</span><p>لا توجد منتجات</p></div>';
 }
 
-// Custom Requests
 async function loadCustom() {
   var d = await api('/admin/api/custom-requests');
-  var reqs = d.requests || [];
-  var rows = reqs.map(function(r) {
-    return '<tr><td>' + ((r.users && r.users.phone) || '—') + '</td>'
-      + '<td>' + r.brand + '</td>'
-      + '<td>' + r.perfume_name + '</td>'
-      + '<td>' + (r.notes || '—') + '</td>'
-      + '<td>' + statusBadge(r.status) + '</td></tr>';
+  var reqs = d.requests||[];
+  var rows = reqs.map(function(r){
+    return '<tr><td>'+(r.users&&r.users.phone||'—')+'</td>'
+      +'<td><strong>'+r.brand+'</strong></td>'
+      +'<td>'+r.perfume_name+'</td>'
+      +'<td>'+(r.notes||'—')+'</td>'
+      +'<td>'+badge(r.status)+'</td></tr>';
   }).join('');
   document.getElementById('customTable').innerHTML = rows
-    ? '<table><thead><tr><th>هاتف</th><th>الماركة</th><th>العطر</th><th>ملاحظات</th><th>حالة</th></tr></thead><tbody>' + rows + '</tbody></table>'
-    : '<div class="empty">لا توجد طلبات مخصصة</div>';
+    ? '<table><thead><tr><th>العميل</th><th>الماركة</th><th>العطر</th><th>ملاحظات</th><th>الحالة</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    : '<div class="empty-state"><span class="empty-icon">✨</span><p>لا توجد طلبات مخصصة</p></div>';
 }
 
-// Actions
 async function updateOrder(id, status) {
-  await api('/admin/api/orders/' + id + '/status', { method: 'PATCH', body: JSON.stringify({ status: status }) });
+  await api('/admin/api/orders/'+id+'/status', {method:'PATCH',body:JSON.stringify({status:status})});
 }
 
 async function toggleBlock(id, block) {
-  await api('/admin/api/users/' + id + '/block', { method: 'PATCH', body: JSON.stringify({ is_blocked: block }) });
+  await api('/admin/api/users/'+id+'/block', {method:'PATCH',body:JSON.stringify({is_blocked:block})});
   loadUsers();
 }
 
 async function toggleProduct(id, active) {
-  await api('/admin/api/products/' + id, { method: 'PATCH', body: JSON.stringify({ is_active: active }) });
+  await api('/admin/api/products/'+id, {method:'PATCH',body:JSON.stringify({is_active:active})});
   loadProducts();
 }
 
 async function saveCfg(key) {
   var value = document.getElementById(key).value;
-  await api('/admin/api/config/' + key, { method: 'PATCH', body: JSON.stringify({ value: value }) });
-  alert('تم الحفظ بنجاح');
+  await api('/admin/api/config/'+key, {method:'PATCH',body:JSON.stringify({value:value})});
+  alert('✅ تم الحفظ بنجاح!');
 }
 </script>
 </body>
