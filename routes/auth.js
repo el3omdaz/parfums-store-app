@@ -4,8 +4,23 @@ const twilio = require('twilio');
 const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
 
-const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+// Lazy init — لا يشتغل إلا عند أول طلب
+let twilioClient = null;
+let supabase = null;
+
+function getTwilio() {
+  if (!twilioClient) {
+    twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  }
+  return twilioClient;
+}
+
+function getSupabase() {
+  if (!supabase) {
+    supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  }
+  return supabase;
+}
 
 // توليد OTP عشوائي 6 أرقام
 function generateOTP() {
@@ -30,7 +45,7 @@ router.post('/send-otp', async (req, res) => {
     if (!formattedPhone) return res.status(400).json({ error: 'رقم الهاتف غير صحيح' });
 
     // تحقق إذا المستخدم محظور
-    const { data: user } = await supabase
+    const { data: user } = await getSupabase()
       .from('users')
       .select('is_blocked')
       .eq('phone', formattedPhone)
@@ -41,18 +56,16 @@ router.post('/send-otp', async (req, res) => {
     }
 
     const otp = generateOTP();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 دقائق
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
-    // احفظ OTP في قاعدة البيانات
-    await supabase.from('otp_codes').upsert({
+    await getSupabase().from('otp_codes').upsert({
       phone: formattedPhone,
       code: otp,
       expires_at: expiresAt.toISOString(),
       verified: false
     }, { onConflict: 'phone' });
 
-    // أرسل عبر واتساب
-    await twilioClient.messages.create({
+    await getTwilio().messages.create({
       from: process.env.TWILIO_WHATSAPP_FROM,
       contentSid: process.env.TWILIO_CONTENT_SID,
       contentVariables: JSON.stringify({ "1": otp }),
@@ -76,7 +89,7 @@ router.post('/verify-otp', async (req, res) => {
     const formattedPhone = formatKuwaitPhone(phone);
 
     // جيب الـ OTP من قاعدة البيانات
-    const { data: otpRecord } = await supabase
+    const { data: otpRecord } = await getSupabase()
       .from('otp_codes')
       .select('*')
       .eq('phone', formattedPhone)
@@ -87,11 +100,9 @@ router.post('/verify-otp', async (req, res) => {
     if (new Date() > new Date(otpRecord.expires_at)) return res.status(400).json({ error: 'انتهت صلاحية الكود' });
     if (otpRecord.code !== code) return res.status(400).json({ error: 'الكود غير صحيح' });
 
-    // اعلم إن الكود استُخدم
-    await supabase.from('otp_codes').update({ verified: true }).eq('phone', formattedPhone);
+    await getSupabase().from('otp_codes').update({ verified: true }).eq('phone', formattedPhone);
 
-    // سجّل المستخدم أو سجّل دخوله
-    const { data: existingUser } = await supabase
+    const { data: existingUser } = await getSupabase()
       .from('users')
       .select('*')
       .eq('phone', formattedPhone)
@@ -100,9 +111,9 @@ router.post('/verify-otp', async (req, res) => {
     let userId;
     if (existingUser) {
       userId = existingUser.id;
-      await supabase.from('users').update({ last_login: new Date().toISOString() }).eq('id', userId);
+      await getSupabase().from('users').update({ last_login: new Date().toISOString() }).eq('id', userId);
     } else {
-      const { data: newUser } = await supabase
+      const { data: newUser } = await getSupabase()
         .from('users')
         .insert({ phone: formattedPhone, created_at: new Date().toISOString() })
         .select()
