@@ -4,7 +4,7 @@
   "description": "Parfums Store Backend API",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node --experimental-websocket server.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {
