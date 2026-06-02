@@ -191,7 +191,7 @@ td{color:#CCC}
       <div class="stat"><div class="stat-num" id="stat-orders">—</div><div class="stat-lbl">إجمالي الطلبات</div></div>
       <div class="stat"><div class="stat-num" id="stat-pending">—</div><div class="stat-lbl">طلبات معلقة</div></div>
       <div class="stat"><div class="stat-num" id="stat-users">—</div><div class="stat-lbl">المستخدمين</div></div>
-      <div class="stat"><div class="stat-num" id="stat-revenue">—</div><div class="stat-lbl">الإيرادات (د.ك)</div></div>
+      <div class="stat"><div class="stat-num" id="stat-revenue">—</div><div class="stat-lbl">الإيرادات (KD)</div></div>
     </div>
     <div class="card">
       <div class="card-hdr">آخر الطلبات</div>
@@ -256,17 +256,17 @@ td{color:#CCC}
       <div class="card-hdr">الإعدادات</div>
       <div style="padding:24px;display:flex;flex-direction:column;gap:20px">
         <div>
-          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">السعر الموحد (د.ك)</div>
+          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">السعر الموحد (KD)</div>
           <input class="price-input" id="standard_price" type="number" step="0.001" value="4.000">
           <button class="save-btn" style="margin-right:10px" onclick="saveConfig('standard_price')">حفظ</button>
         </div>
         <div>
-          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">سعر التوصيل العادي (د.ك)</div>
+          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">سعر التوصيل العادي (KD)</div>
           <input class="price-input" id="delivery_price" type="number" step="0.001" value="2.000">
           <button class="save-btn" style="margin-right:10px" onclick="saveConfig('delivery_price')">حفظ</button>
         </div>
         <div>
-          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">سعر التوصيل المناطق البعيدة (د.ك)</div>
+          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">سعر التوصيل المناطق البعيدة (KD)</div>
           <input class="price-input" id="delivery_price_far" type="number" step="0.001" value="3.000">
           <button class="save-btn" style="margin-right:10px" onclick="saveConfig('delivery_price_far')">حفظ</button>
         </div>
@@ -308,9 +308,9 @@ async function loadDashboard() {
   document.getElementById('stat-revenue').textContent = revenue.toFixed(3);
   const recent = (orders.orders||[]).slice(0,5);
   document.getElementById('recent-orders').innerHTML = recent.map(o=>`
-    <tr><td>#${o.id?.slice(0,8)}</td><td>${o.users?.phone||'—'}</td><td>${o.total} د.ك</td>
+    <tr><td>#${o.id?.slice(0,8)}</td><td>${o.users?.phone||'—'}</td><td>${o.total} KD</td>
     <td><span class="badge ${o.status}">${statusLabels[o.status]||o.status}</span></td>
-    <td>${new Date(o.created_at).toLocaleDateString('ar-KW')}</td></tr>`).join('');
+    <td>${new Date(o.created_at).toLocaleDateString('en-US')}</td></tr>`).join('');
 }
 
 async function loadOrders(status='') {
@@ -318,7 +318,7 @@ async function loadOrders(status='') {
   const { orders } = await api(url);
   document.getElementById('orders-table').innerHTML = (orders||[]).map(o=>`
     <tr><td>#${o.id?.slice(0,8)}</td><td>${o.users?.phone||'—'}</td>
-    <td>${(o.items||[]).length} منتج</td><td>${o.total} د.ك</td>
+    <td>${(o.items||[]).length} منتج</td><td>${o.total} KD</td>
     <td><span class="badge ${o.status}">${statusLabels[o.status]||o.status}</span></td>
     <td><select onchange="updateOrderStatus('${o.id}',this.value)" style="background:#0A0A0A;border:0.5px solid #333;color:#888;padding:4px 8px;font-size:10px;outline:none">
       ${Object.entries(statusLabels).map(([v,l])=>`<option value="${v}" ${o.status===v?'selected':''}>${l}</option>`).join('')}
@@ -328,8 +328,8 @@ async function loadOrders(status='') {
 async function loadUsers() {
   const { users } = await api('/admin/api/users');
   document.getElementById('users-table').innerHTML = (users||[]).map(u=>`
-    <tr><td>${u.phone}</td><td>${new Date(u.created_at).toLocaleDateString('ar-KW')}</td>
-    <td>${u.last_login?new Date(u.last_login).toLocaleDateString('ar-KW'):'—'}</td>
+    <tr><td>${u.phone}</td><td>${new Date(u.created_at).toLocaleDateString('en-US')}</td>
+    <td>${u.last_login?new Date(u.last_login).toLocaleDateString('en-US'):'—'}</td>
     <td><span style="color:${u.is_blocked?'#C85050':'#50C878'}">${u.is_blocked?'محظور':'نشط'}</span></td>
     <td><button class="${u.is_blocked?'unblock-btn':'block-btn'}" onclick="toggleBlock('${u.id}',${!u.is_blocked})">
       ${u.is_blocked?'فك الحظر':'حظر'}</button></td></tr>`).join('');
@@ -340,7 +340,7 @@ async function loadProducts() {
   document.getElementById('products-table').innerHTML = (products||[]).map(p=>`
     <tr><td>${p.name}</td><td>${p.brand||'—'}</td>
     <td>${p.is_privee?'Collection Privée':p.origin==='fr'?'فرنسية':'عربية'}</td>
-    <td>${p.is_privee?p.price+' د.ك':'4.000 د.ك'}</td>
+    <td>${p.is_privee?p.price+' KD':'4.000 KD'}</td>
     <td><span style="color:${p.is_active?'#50C878':'#C85050'}">${p.is_active?'نشط':'مخفي'}</span></td>
     <td><button class="block-btn" onclick="toggleProduct('${p.id}',${!p.is_active})">${p.is_active?'إخفاء':'إظهار'}</button></td></tr>`).join('');
 }
@@ -384,7 +384,7 @@ async function saveConfig(key) {
 function filterOrders(status) { loadOrders(status); }
 function logout() { localStorage.removeItem('admin_token'); window.location.reload(); }
 
-document.getElementById('lastUpdated').textContent = new Date().toLocaleString('ar-KW');
+document.getElementById('lastUpdated').textContent = new Date().toLocaleString('en-US');
 loadDashboard();
 </script>
 </body></html>`;
