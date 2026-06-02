@@ -3,391 +3,260 @@ const router = express.Router();
 const { createClient } = require('@supabase/supabase-js');
 const { adminMiddleware } = require('../middleware/auth');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+function getDB() {
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+}
 
-// ===== لوحة الادمن — HTML =====
-router.get('/', (req, res) => {
-  const adminPassword = req.cookies?.admin_token || req.headers['x-admin-token'];
-  if (adminPassword !== process.env.ADMIN_SECRET) {
-    return res.send(loginPage());
-  }
-  res.send(adminDashboard());
-});
-
+// ===== Admin Login =====
 router.post('/login', (req, res) => {
   const { password } = req.body;
   if (password === process.env.ADMIN_SECRET) {
     res.json({ success: true, token: process.env.ADMIN_SECRET });
   } else {
-    res.status(401).json({ error: 'كلمة السر غير صحيحة' });
+    res.status(401).json({ error: 'Wrong password' });
   }
 });
 
-// ===== الطلبات =====
+// ===== Orders =====
 router.get('/api/orders', adminMiddleware, async (req, res) => {
-  const { status } = req.query;
-  let query = supabase.from('orders').select(`*, users(phone)`).order('created_at', { ascending: false });
-  if (status) query = query.eq('status', status);
-  const { data } = await query;
-  res.json({ orders: data });
+  try {
+    const { status } = req.query;
+    let query = getDB().from('orders').select('*, users(phone)').order('created_at', { ascending: false });
+    if (status) query = query.eq('status', status);
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json({ orders: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.patch('/api/orders/:id/status', adminMiddleware, async (req, res) => {
-  const { status } = req.body;
-  const validStatuses = ['pending', 'confirmed', 'preparing', 'shipped', 'delivered', 'cancelled'];
-  if (!validStatuses.includes(status)) return res.status(400).json({ error: 'حالة غير صحيحة' });
-
-  const { data } = await supabase.from('orders').update({ status }).eq('id', req.params.id).select().single();
-  res.json({ order: data });
+  try {
+    const { status } = req.body;
+    const valid = ['pending','confirmed','preparing','shipped','delivered','cancelled'];
+    if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+    const { data } = await getDB().from('orders').update({ status }).eq('id', req.params.id).select().single();
+    res.json({ order: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-// ===== المستخدمين =====
+// ===== Users =====
 router.get('/api/users', adminMiddleware, async (req, res) => {
-  const { data } = await supabase.from('users').select('id, phone, is_blocked, created_at, last_login').order('created_at', { ascending: false });
-  res.json({ users: data });
+  try {
+    const { data } = await getDB().from('users').select('id,phone,is_blocked,created_at,last_login').order('created_at', { ascending: false });
+    res.json({ users: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-// ===== بلوك / فك بلوك =====
 router.patch('/api/users/:id/block', adminMiddleware, async (req, res) => {
-  const { is_blocked } = req.body;
-  const { data } = await supabase.from('users').update({ is_blocked }).eq('id', req.params.id).select().single();
-  res.json({ success: true, user: data, message: is_blocked ? 'تم حظر المستخدم' : 'تم فك الحظر' });
+  try {
+    const { is_blocked } = req.body;
+    const { data } = await getDB().from('users').update({ is_blocked }).eq('id', req.params.id).select().single();
+    res.json({ success: true, user: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-// ===== المنتجات =====
+// ===== Products =====
 router.get('/api/products', adminMiddleware, async (req, res) => {
-  const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-  res.json({ products: data });
+  try {
+    const { data } = await getDB().from('products').select('*').order('created_at', { ascending: false });
+    res.json({ products: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.post('/api/products', adminMiddleware, async (req, res) => {
-  const { data } = await supabase.from('products').insert(req.body).select().single();
-  res.json({ product: data });
+  try {
+    const { data } = await getDB().from('products').insert(req.body).select().single();
+    res.json({ product: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.patch('/api/products/:id', adminMiddleware, async (req, res) => {
-  const { data } = await supabase.from('products').update(req.body).eq('id', req.params.id).select().single();
-  res.json({ product: data });
+  try {
+    const { data } = await getDB().from('products').update(req.body).eq('id', req.params.id).select().single();
+    res.json({ product: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-router.delete('/api/products/:id', adminMiddleware, async (req, res) => {
-  await supabase.from('products').update({ is_active: false }).eq('id', req.params.id);
-  res.json({ success: true });
-});
-
-// ===== الإعدادات (السعر الموحد وغيره) =====
+// ===== Config =====
 router.patch('/api/config/:key', adminMiddleware, async (req, res) => {
-  const { value } = req.body;
-  await supabase.from('config').upsert({ key: req.params.key, value: String(value) }, { onConflict: 'key' });
-  res.json({ success: true });
+  try {
+    const { value } = req.body;
+    await getDB().from('config').upsert({ key: req.params.key, value: String(value) }, { onConflict: 'key' });
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-// ===== الطلبات المخصصة =====
+// ===== Custom Requests =====
 router.get('/api/custom-requests', adminMiddleware, async (req, res) => {
-  const { data } = await supabase.from('custom_requests').select(`*, users(phone)`).order('created_at', { ascending: false });
-  res.json({ requests: data });
+  try {
+    const { data } = await getDB().from('custom_requests').select('*, users(phone)').order('created_at', { ascending: false });
+    res.json({ requests: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.patch('/api/custom-requests/:id/status', adminMiddleware, async (req, res) => {
-  const { status } = req.body;
-  const { data } = await supabase.from('custom_requests').update({ status }).eq('id', req.params.id).select().single();
-  res.json({ request: data });
+  try {
+    const { status } = req.body;
+    const { data } = await getDB().from('custom_requests').update({ status }).eq('id', req.params.id).select().single();
+    res.json({ request: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-// ===== HTML لوحة التحكم =====
-function loginPage() {
-  return `<!DOCTYPE html><html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>لوحة التحكم — Parfums</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0A0A0A;font-family:'Segoe UI',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
-.box{background:#1A1A1A;border:0.5px solid #333;padding:40px;width:320px}
-h1{font-size:20px;color:#C8B89A;letter-spacing:0.2em;margin-bottom:8px;font-weight:300}
-p{font-size:11px;color:#666;letter-spacing:0.15em;margin-bottom:28px}
-input{width:100%;background:#0A0A0A;border:0.5px solid #333;color:#fff;padding:12px;font-size:14px;outline:none;margin-bottom:14px}
-input:focus{border-color:#C8B89A}
-button{width:100%;background:#C8B89A;color:#0A0A0A;border:none;padding:12px;font-size:12px;letter-spacing:0.2em;cursor:pointer}
-.err{color:#E57373;font-size:11px;margin-top:8px;display:none}
-</style></head>
-<body><div class="box">
-<h1>Parfums</h1><p>ADMIN PANEL</p>
-<input type="password" id="pwd" placeholder="كلمة السر" onkeydown="if(event.key==='Enter')login()">
-<button onclick="login()">دخول</button>
-<p class="err" id="err">كلمة السر غير صحيحة</p>
-</div>
-<script>
-async function login(){
-  const pwd=document.getElementById('pwd').value;
-  const r=await fetch('/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd})});
-  const d=await r.json();
-  if(d.success){localStorage.setItem('admin_token',d.token);window.location.reload()}
-  else{document.getElementById('err').style.display='block'}
-}
-</script></body></html>`;
-}
+// ===== Admin Dashboard HTML =====
+router.get('/', (req, res) => {
+  res.send(getDashboardHTML());
+});
 
-function adminDashboard() {
-  return `<!DOCTYPE html><html lang="ar" dir="rtl">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>لوحة التحكم — Parfums</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0A0A0A;font-family:'Segoe UI',sans-serif;color:#E0D8CC;min-height:100vh}
-.sidebar{position:fixed;top:0;right:0;width:220px;height:100vh;background:#111;border-left:0.5px solid #222;padding:24px 0}
-.logo{padding:0 20px 24px;font-size:18px;color:#C8B89A;letter-spacing:0.2em;border-bottom:0.5px solid #222;margin-bottom:16px}
-.nav-item{padding:12px 20px;font-size:12px;letter-spacing:0.15em;color:#666;cursor:pointer;transition:all 0.2s;text-transform:uppercase}
-.nav-item:hover,.nav-item.active{color:#C8B89A;background:#1A1A1A}
-.main{margin-right:220px;padding:24px}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:0.5px solid #222}
-.header h1{font-size:16px;color:#C8B89A;letter-spacing:0.2em;font-weight:300}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.stat{background:#111;border:0.5px solid #222;padding:16px}
-.stat-num{font-size:28px;color:#C8B89A;font-weight:300;margin-bottom:4px}
-.stat-lbl{font-size:10px;color:#555;letter-spacing:0.2em;text-transform:uppercase}
-.card{background:#111;border:0.5px solid #222;margin-bottom:16px}
-.card-hdr{padding:14px 18px;border-bottom:0.5px solid #222;font-size:11px;letter-spacing:0.2em;color:#888;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
-table{width:100%;border-collapse:collapse}
-td,th{padding:12px 18px;text-align:right;font-size:12px;border-bottom:0.5px solid #1A1A1A}
-th{color:#555;letter-spacing:0.15em;font-weight:400;text-transform:uppercase;font-size:10px}
-td{color:#CCC}
-.badge{display:inline-block;padding:3px 8px;font-size:10px;letter-spacing:0.1em}
-.badge.pending{background:#2A2015;color:#C8A050}
-.badge.confirmed{background:#152A1A;color:#50C878}
-.badge.shipped{background:#15201A;color:#50A0C8}
-.badge.delivered{background:#1A2A15;color:#78C850}
-.badge.cancelled{background:#2A1515;color:#C85050}
-.block-btn{background:none;border:0.5px solid #C85050;color:#C85050;padding:4px 10px;font-size:10px;cursor:pointer;letter-spacing:0.1em;transition:all 0.2s}
-.block-btn:hover{background:#C85050;color:#fff}
-.unblock-btn{background:none;border:0.5px solid #50C878;color:#50C878;padding:4px 10px;font-size:10px;cursor:pointer;letter-spacing:0.1em}
-.unblock-btn:hover{background:#50C878;color:#000}
-.section{display:none}
-.section.active{display:block}
-.search{background:#0A0A0A;border:0.5px solid #333;color:#fff;padding:8px 12px;font-size:12px;outline:none;width:200px}
-.save-btn{background:#C8B89A;color:#0A0A0A;border:none;padding:8px 16px;font-size:11px;letter-spacing:0.15em;cursor:pointer}
-.price-input{background:#0A0A0A;border:0.5px solid #333;color:#C8B89A;padding:8px 12px;font-size:16px;outline:none;width:120px;font-family:inherit}
-</style></head>
-<body>
-<div class="sidebar">
-  <div class="logo">Parfums</div>
-  <div class="nav-item active" onclick="showSection('dashboard')">الرئيسية</div>
-  <div class="nav-item" onclick="showSection('orders')">الطلبات</div>
-  <div class="nav-item" onclick="showSection('custom')">الطلبات المخصصة</div>
-  <div class="nav-item" onclick="showSection('users')">المستخدمين</div>
-  <div class="nav-item" onclick="showSection('products')">المنتجات</div>
-  <div class="nav-item" onclick="showSection('settings')">الإعدادات</div>
-  <div class="nav-item" style="margin-top:auto;color:#555" onclick="logout()">خروج</div>
-</div>
-
-<div class="main">
-  <div class="header">
-    <h1 id="pageTitle">لوحة التحكم</h1>
-    <span style="font-size:11px;color:#555;letter-spacing:0.1em" id="lastUpdated"></span>
-  </div>
-
-  <!-- Dashboard -->
-  <div class="section active" id="sec-dashboard">
-    <div class="stats">
-      <div class="stat"><div class="stat-num" id="stat-orders">—</div><div class="stat-lbl">إجمالي الطلبات</div></div>
-      <div class="stat"><div class="stat-num" id="stat-pending">—</div><div class="stat-lbl">طلبات معلقة</div></div>
-      <div class="stat"><div class="stat-num" id="stat-users">—</div><div class="stat-lbl">المستخدمين</div></div>
-      <div class="stat"><div class="stat-num" id="stat-revenue">—</div><div class="stat-lbl">الإيرادات (KD)</div></div>
-    </div>
-    <div class="card">
-      <div class="card-hdr">آخر الطلبات</div>
-      <table><thead><tr><th>الرقم</th><th>الهاتف</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th></tr></thead>
-      <tbody id="recent-orders"></tbody></table>
-    </div>
-  </div>
-
-  <!-- Orders -->
-  <div class="section" id="sec-orders">
-    <div class="card">
-      <div class="card-hdr">
-        جميع الطلبات
-        <select onchange="filterOrders(this.value)" style="background:#0A0A0A;border:0.5px solid #333;color:#888;padding:6px 10px;font-size:11px;outline:none">
-          <option value="">الكل</option>
-          <option value="pending">معلقة</option>
-          <option value="confirmed">مؤكدة</option>
-          <option value="preparing">قيد التحضير</option>
-          <option value="shipped">تم الشحن</option>
-          <option value="delivered">تم التوصيل</option>
-          <option value="cancelled">ملغاة</option>
-        </select>
-      </div>
-      <table><thead><tr><th>الرقم</th><th>الهاتف</th><th>المنتجات</th><th>المبلغ</th><th>الحالة</th><th>الإجراء</th></tr></thead>
-      <tbody id="orders-table"></tbody></table>
-    </div>
-  </div>
-
-  <!-- Custom Requests -->
-  <div class="section" id="sec-custom">
-    <div class="card">
-      <div class="card-hdr">الطلبات المخصصة</div>
-      <table><thead><tr><th>الهاتف</th><th>الماركة</th><th>العطر</th><th>ملاحظات</th><th>الحالة</th><th>الإجراء</th></tr></thead>
-      <tbody id="custom-table"></tbody></table>
-    </div>
-  </div>
-
-  <!-- Users -->
-  <div class="section" id="sec-users">
-    <div class="card">
-      <div class="card-hdr">المستخدمين</div>
-      <table><thead><tr><th>الهاتف</th><th>تاريخ التسجيل</th><th>آخر دخول</th><th>الحالة</th><th>الإجراء</th></tr></thead>
-      <tbody id="users-table"></tbody></table>
-    </div>
-  </div>
-
-  <!-- Products -->
-  <div class="section" id="sec-products">
-    <div class="card">
-      <div class="card-hdr">
-        المنتجات
-        <button class="save-btn" onclick="showAddProduct()">+ إضافة منتج</button>
-      </div>
-      <table><thead><tr><th>الاسم</th><th>الماركة</th><th>النوع</th><th>السعر</th><th>الحالة</th><th>الإجراء</th></tr></thead>
-      <tbody id="products-table"></tbody></table>
-    </div>
-  </div>
-
-  <!-- Settings -->
-  <div class="section" id="sec-settings">
-    <div class="card">
-      <div class="card-hdr">الإعدادات</div>
-      <div style="padding:24px;display:flex;flex-direction:column;gap:20px">
-        <div>
-          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">السعر الموحد (KD)</div>
-          <input class="price-input" id="standard_price" type="number" step="0.001" value="4.000">
-          <button class="save-btn" style="margin-right:10px" onclick="saveConfig('standard_price')">حفظ</button>
-        </div>
-        <div>
-          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">سعر التوصيل العادي (KD)</div>
-          <input class="price-input" id="delivery_price" type="number" step="0.001" value="2.000">
-          <button class="save-btn" style="margin-right:10px" onclick="saveConfig('delivery_price')">حفظ</button>
-        </div>
-        <div>
-          <div style="font-size:10px;color:#555;letter-spacing:0.2em;margin-bottom:8px">سعر التوصيل المناطق البعيدة (KD)</div>
-          <input class="price-input" id="delivery_price_far" type="number" step="0.001" value="3.000">
-          <button class="save-btn" style="margin-right:10px" onclick="saveConfig('delivery_price_far')">حفظ</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-const TOKEN = localStorage.getItem('admin_token');
-const H = { 'Content-Type':'application/json', 'x-admin-token': TOKEN };
-
-async function api(url, opts={}) {
-  const r = await fetch(url, { headers: H, ...opts });
-  return r.json();
-}
-
-const statusLabels = { pending:'معلقة', confirmed:'مؤكدة', preparing:'قيد التحضير', shipped:'تم الشحن', delivered:'تم التوصيل', cancelled:'ملغاة' };
-
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('sec-'+id).classList.add('active');
-  event.target.classList.add('active');
-  const titles = { dashboard:'لوحة التحكم', orders:'الطلبات', custom:'الطلبات المخصصة', users:'المستخدمين', products:'المنتجات', settings:'الإعدادات' };
-  document.getElementById('pageTitle').textContent = titles[id];
-  if(id==='orders') loadOrders();
-  if(id==='users') loadUsers();
-  if(id==='products') loadProducts();
-  if(id==='custom') loadCustomRequests();
-}
-
-async function loadDashboard() {
-  const [orders, users] = await Promise.all([api('/admin/api/orders'), api('/admin/api/users')]);
-  document.getElementById('stat-orders').textContent = orders.orders?.length || 0;
-  document.getElementById('stat-pending').textContent = orders.orders?.filter(o=>o.status==='pending').length || 0;
-  document.getElementById('stat-users').textContent = users.users?.length || 0;
-  const revenue = orders.orders?.reduce((s,o)=>s+parseFloat(o.total||0), 0) || 0;
-  document.getElementById('stat-revenue').textContent = revenue.toFixed(3);
-  const recent = (orders.orders||[]).slice(0,5);
-  document.getElementById('recent-orders').innerHTML = recent.map(o=>`
-    <tr><td>#${o.id?.slice(0,8)}</td><td>${o.users?.phone||'—'}</td><td>${o.total} KD</td>
-    <td><span class="badge ${o.status}">${statusLabels[o.status]||o.status}</span></td>
-    <td>${new Date(o.created_at).toLocaleDateString('en-US')}</td></tr>`).join('');
-}
-
-async function loadOrders(status='') {
-  const url = '/admin/api/orders' + (status?'?status='+status:'');
-  const { orders } = await api(url);
-  document.getElementById('orders-table').innerHTML = (orders||[]).map(o=>`
-    <tr><td>#${o.id?.slice(0,8)}</td><td>${o.users?.phone||'—'}</td>
-    <td>${(o.items||[]).length} منتج</td><td>${o.total} KD</td>
-    <td><span class="badge ${o.status}">${statusLabels[o.status]||o.status}</span></td>
-    <td><select onchange="updateOrderStatus('${o.id}',this.value)" style="background:#0A0A0A;border:0.5px solid #333;color:#888;padding:4px 8px;font-size:10px;outline:none">
-      ${Object.entries(statusLabels).map(([v,l])=>`<option value="${v}" ${o.status===v?'selected':''}>${l}</option>`).join('')}
-    </select></td></tr>`).join('');
-}
-
-async function loadUsers() {
-  const { users } = await api('/admin/api/users');
-  document.getElementById('users-table').innerHTML = (users||[]).map(u=>`
-    <tr><td>${u.phone}</td><td>${new Date(u.created_at).toLocaleDateString('en-US')}</td>
-    <td>${u.last_login?new Date(u.last_login).toLocaleDateString('en-US'):'—'}</td>
-    <td><span style="color:${u.is_blocked?'#C85050':'#50C878'}">${u.is_blocked?'محظور':'نشط'}</span></td>
-    <td><button class="${u.is_blocked?'unblock-btn':'block-btn'}" onclick="toggleBlock('${u.id}',${!u.is_blocked})">
-      ${u.is_blocked?'فك الحظر':'حظر'}</button></td></tr>`).join('');
-}
-
-async function loadProducts() {
-  const { products } = await api('/admin/api/products');
-  document.getElementById('products-table').innerHTML = (products||[]).map(p=>`
-    <tr><td>${p.name}</td><td>${p.brand||'—'}</td>
-    <td>${p.is_privee?'Collection Privée':p.origin==='fr'?'فرنسية':'عربية'}</td>
-    <td>${p.is_privee?p.price+' KD':'4.000 KD'}</td>
-    <td><span style="color:${p.is_active?'#50C878':'#C85050'}">${p.is_active?'نشط':'مخفي'}</span></td>
-    <td><button class="block-btn" onclick="toggleProduct('${p.id}',${!p.is_active})">${p.is_active?'إخفاء':'إظهار'}</button></td></tr>`).join('');
-}
-
-async function loadCustomRequests() {
-  const { requests } = await api('/admin/api/custom-requests');
-  document.getElementById('custom-table').innerHTML = (requests||[]).map(r=>`
-    <tr><td>${r.users?.phone||'—'}</td><td>${r.brand}</td><td>${r.perfume_name}</td>
-    <td>${r.notes||'—'}</td><td><span class="badge ${r.status}">${statusLabels[r.status]||r.status}</span></td>
-    <td><select onchange="updateCustomStatus('${r.id}',this.value)" style="background:#0A0A0A;border:0.5px solid #333;color:#888;padding:4px 8px;font-size:10px;outline:none">
-      <option value="pending" ${r.status==='pending'?'selected':''}>معلق</option>
-      <option value="confirmed" ${r.status==='confirmed'?'selected':''}>مؤكد</option>
-      <option value="delivered" ${r.status==='delivered'?'selected':''}>تم</option>
-    </select></td></tr>`).join('');
-}
-
-async function toggleBlock(id, block) {
-  await api('/admin/api/users/'+id+'/block', { method:'PATCH', body: JSON.stringify({ is_blocked: block }) });
-  loadUsers();
-}
-
-async function updateOrderStatus(id, status) {
-  await api('/admin/api/orders/'+id+'/status', { method:'PATCH', body: JSON.stringify({ status }) });
-}
-
-async function updateCustomStatus(id, status) {
-  await api('/admin/api/custom-requests/'+id+'/status', { method:'PATCH', body: JSON.stringify({ status }) });
-}
-
-async function toggleProduct(id, active) {
-  await api('/admin/api/products/'+id, { method:'PATCH', body: JSON.stringify({ is_active: active }) });
-  loadProducts();
-}
-
-async function saveConfig(key) {
-  const value = document.getElementById(key).value;
-  await api('/admin/api/config/'+key, { method:'PATCH', body: JSON.stringify({ value }) });
-  alert('تم الحفظ ✅');
-}
-
-function filterOrders(status) { loadOrders(status); }
-function logout() { localStorage.removeItem('admin_token'); window.location.reload(); }
-
-document.getElementById('lastUpdated').textContent = new Date().toLocaleString('en-US');
-loadDashboard();
-</script>
-</body></html>`;
+function getDashboardHTML() {
+  const html = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parfums Admin</title>'
+    + '<style>'
+    + '*{margin:0;padding:0;box-sizing:border-box}'
+    + 'body{background:#0A0A0A;font-family:sans-serif;color:#E0D8CC;min-height:100vh}'
+    + '.sidebar{position:fixed;top:0;right:0;width:200px;height:100vh;background:#111;border-left:1px solid #222;padding:20px 0}'
+    + '.logo{padding:0 16px 20px;font-size:16px;color:#C8B89A;border-bottom:1px solid #222;margin-bottom:12px}'
+    + '.nav{padding:10px 16px;font-size:12px;color:#666;cursor:pointer}'
+    + '.nav:hover,.nav.active{color:#C8B89A;background:#1A1A1A}'
+    + '.main{margin-right:200px;padding:20px}'
+    + '.card{background:#111;border:1px solid #222;margin-bottom:16px}'
+    + '.card-hdr{padding:12px 16px;border-bottom:1px solid #222;font-size:11px;color:#888;display:flex;justify-content:space-between;align-items:center}'
+    + 'table{width:100%;border-collapse:collapse}'
+    + 'td,th{padding:10px 16px;text-align:right;font-size:12px;border-bottom:1px solid #1A1A1A}'
+    + 'th{color:#555;font-weight:400;font-size:10px}'
+    + '.btn{background:none;border:1px solid #C85050;color:#C85050;padding:3px 8px;font-size:10px;cursor:pointer}'
+    + '.btn.green{border-color:#50C878;color:#50C878}'
+    + '.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}'
+    + '.stat{background:#111;border:1px solid #222;padding:14px}'
+    + '.stat-n{font-size:26px;color:#C8B89A;margin-bottom:4px}'
+    + '.stat-l{font-size:10px;color:#555}'
+    + '.sec{display:none}.sec.active{display:block}'
+    + 'input,select{background:#0A0A0A;border:1px solid #333;color:#fff;padding:6px 10px;font-size:12px;outline:none}'
+    + '.save{background:#C8B89A;color:#0A0A0A;border:none;padding:8px 14px;font-size:11px;cursor:pointer;margin-right:8px}'
+    + '.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh}'
+    + '.login-box{background:#111;border:1px solid #333;padding:36px;width:300px}'
+    + '.login-box h1{color:#C8B89A;font-size:18px;margin-bottom:6px;font-weight:300}'
+    + '.login-box p{color:#555;font-size:11px;margin-bottom:24px}'
+    + '.login-box input{width:100%;margin-bottom:12px}'
+    + '.login-box button{width:100%;background:#C8B89A;color:#0A0A0A;border:none;padding:10px;cursor:pointer}'
+    + '.err{color:#C85050;font-size:11px;margin-top:8px;display:none}'
+    + '</style></head><body>'
+    + '<div id="app"></div>'
+    + '<script>'
+    + 'var TOKEN=localStorage.getItem("admin_token");'
+    + 'var STATUS={"pending":"معلق","confirmed":"مؤكد","preparing":"تحضير","shipped":"شحن","delivered":"تم","cancelled":"ملغي"};'
+    + 'function render(){document.getElementById("app").innerHTML=TOKEN?dashboard():login();}'
+    + 'function login(){'
+    + 'return \'<div class="login-wrap"><div class="login-box"><h1>Parfums</h1><p>ADMIN PANEL</p>\''
+    + '+\'<input type="password" id="pwd" placeholder="كلمة السر" onkeydown="if(event.key===\'Enter\')doLogin()">\''
+    + '+\'<button onclick="doLogin()">دخول</button><p class="err" id="err">كلمة السر خاطئة</p></div></div>\';'
+    + '}'
+    + 'async function doLogin(){'
+    + 'var p=document.getElementById("pwd").value;'
+    + 'var r=await fetch("/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:p})});'
+    + 'var d=await r.json();'
+    + 'if(d.success){TOKEN=d.token;localStorage.setItem("admin_token",TOKEN);render();loadDash();}'
+    + 'else{document.getElementById("err").style.display="block";}'
+    + '}'
+    + 'function dashboard(){'
+    + 'return \'<div class="sidebar">\''
+    + '+\'<div class="logo">Parfums</div>\''
+    + '+\'<div class="nav active" onclick="show(this,\'dash\')">الرئيسية</div>\''
+    + '+\'<div class="nav" onclick="show(this,\'orders\')">الطلبات</div>\''
+    + '+\'<div class="nav" onclick="show(this,\'custom\')">المخصصة</div>\''
+    + '+\'<div class="nav" onclick="show(this,\'users\')">المستخدمين</div>\''
+    + '+\'<div class="nav" onclick="show(this,\'products\')">المنتجات</div>\''
+    + '+\'<div class="nav" onclick="show(this,\'settings\')">الاعدادات</div>\''
+    + '+\'<div class="nav" onclick="logout()" style="color:#555">خروج</div>\''
+    + '+\'</div>\''
+    + '+\'<div class="main">\''
+    + '+\'<div class="sec active" id="sec-dash"><div class="stats"><div class="stat"><div class="stat-n" id="sOrders">-</div><div class="stat-l">الطلبات</div></div><div class="stat"><div class="stat-n" id="sPending">-</div><div class="stat-l">معلقة</div></div><div class="stat"><div class="stat-n" id="sUsers">-</div><div class="stat-l">المستخدمين</div></div><div class="stat"><div class="stat-n" id="sRev">-</div><div class="stat-l">الايراد KD</div></div></div><div class="card"><div class="card-hdr">اخر الطلبات</div><table><thead><tr><th>رقم</th><th>هاتف</th><th>مبلغ</th><th>حالة</th></tr></thead><tbody id="tDash"></tbody></table></div></div>\''
+    + '+\'<div class="sec" id="sec-orders"><div class="card"><div class="card-hdr">الطلبات<select onchange="loadOrders(this.value)" style="margin-right:8px"><option value="">الكل</option><option value="pending">معلق</option><option value="confirmed">مؤكد</option><option value="shipped">شحن</option><option value="delivered">تم</option></select></div><table><thead><tr><th>رقم</th><th>هاتف</th><th>مبلغ</th><th>حالة</th></tr></thead><tbody id="tOrders"></tbody></table></div></div>\''
+    + '+\'<div class="sec" id="sec-custom"><div class="card"><div class="card-hdr">الطلبات المخصصة</div><table><thead><tr><th>هاتف</th><th>ماركة</th><th>عطر</th><th>حالة</th></tr></thead><tbody id="tCustom"></tbody></table></div></div>\''
+    + '+\'<div class="sec" id="sec-users"><div class="card"><div class="card-hdr">المستخدمين</div><table><thead><tr><th>هاتف</th><th>تسجيل</th><th>حالة</th><th>اجراء</th></tr></thead><tbody id="tUsers"></tbody></table></div></div>\''
+    + '+\'<div class="sec" id="sec-products"><div class="card"><div class="card-hdr">المنتجات</div><table><thead><tr><th>اسم</th><th>ماركة</th><th>سعر</th><th>اجراء</th></tr></thead><tbody id="tProducts"></tbody></table></div></div>\''
+    + '+\'<div class="sec" id="sec-settings"><div class="card"><div class="card-hdr">الاعدادات</div><div style="padding:20px;display:flex;flex-direction:column;gap:16px"><div><div style="font-size:10px;color:#555;margin-bottom:6px">سعر العطر الموحد (KD)</div><input id="standard_price" type="number" step="0.001" value="4.000"><button class="save" onclick="saveCfg(\'standard_price\')">حفظ</button></div><div><div style="font-size:10px;color:#555;margin-bottom:6px">توصيل عادي (KD)</div><input id="delivery_price" type="number" step="0.001" value="2.000"><button class="save" onclick="saveCfg(\'delivery_price\')">حفظ</button></div><div><div style="font-size:10px;color:#555;margin-bottom:6px">توصيل مناطق بعيدة (KD)</div><input id="delivery_price_far" type="number" step="0.001" value="3.000"><button class="save" onclick="saveCfg(\'delivery_price_far\')">حفظ</button></div></div></div></div>\''
+    + '+\'</div>\';'
+    + '}'
+    + 'function show(el,id){'
+    + 'document.querySelectorAll(".nav").forEach(function(n){n.classList.remove("active");});'
+    + 'el.classList.add("active");'
+    + 'document.querySelectorAll(".sec").forEach(function(s){s.classList.remove("active");});'
+    + 'document.getElementById("sec-"+id).classList.add("active");'
+    + 'if(id==="orders")loadOrders("");'
+    + 'else if(id==="users")loadUsers();'
+    + 'else if(id==="products")loadProducts();'
+    + 'else if(id==="custom")loadCustom();'
+    + '}'
+    + 'var H={"Content-Type":"application/json","x-admin-token":TOKEN};'
+    + 'async function api(url,opts){var r=await fetch(url,Object.assign({headers:H},opts||{}));return r.json();}'
+    + 'async function loadDash(){'
+    + 'var o=await api("/admin/api/orders");'
+    + 'var u=await api("/admin/api/users");'
+    + 'var orders=o.orders||[];'
+    + 'document.getElementById("sOrders").textContent=orders.length;'
+    + 'document.getElementById("sPending").textContent=orders.filter(function(x){return x.status==="pending";}).length;'
+    + 'document.getElementById("sUsers").textContent=(u.users||[]).length;'
+    + 'var rev=orders.reduce(function(s,x){return s+parseFloat(x.total||0);},0);'
+    + 'document.getElementById("sRev").textContent=rev.toFixed(3);'
+    + 'document.getElementById("tDash").innerHTML=orders.slice(0,5).map(function(o){'
+    + 'return "<tr><td>#"+(o.id||"").slice(0,8)+"</td><td>"+(o.users&&o.users.phone||"-")+"</td><td>"+(o.total||0)+" KD</td><td>"+(STATUS[o.status]||o.status)+"</td></tr>";'
+    + '}).join("");'
+    + '}'
+    + 'async function loadOrders(status){'
+    + 'var url="/admin/api/orders"+(status?"?status="+status:"");'
+    + 'var d=await api(url);'
+    + 'document.getElementById("tOrders").innerHTML=(d.orders||[]).map(function(o){'
+    + 'var opts=Object.keys(STATUS).map(function(v){return "<option value=\'"+v+"\'"+(o.status===v?" selected":"")+">"+STATUS[v]+"</option>";}).join("");'
+    + 'return "<tr><td>#"+(o.id||"").slice(0,8)+"</td><td>"+(o.users&&o.users.phone||"-")+"</td><td>"+(o.total||0)+" KD</td><td><select onchange=\"updateOrder(\'"+o.id+"\',this.value)\">"+opts+"</select></td></tr>";'
+    + '}).join("");'
+    + '}'
+    + 'async function loadUsers(){'
+    + 'var d=await api("/admin/api/users");'
+    + 'document.getElementById("tUsers").innerHTML=(d.users||[]).map(function(u){'
+    + 'var blocked=u.is_blocked;'
+    + 'return "<tr><td>"+u.phone+"</td><td>"+(u.created_at||"").slice(0,10)+"</td><td style=\'color:"+(blocked?"#C85050":"#50C878")+"\'>\"+(blocked?"محظور":"نشط")+"</td><td><button class=\'btn "+(blocked?"green":"")+"' + "'" + ' onclick=\'toggleBlock(\\\""+u.id+"\\\","+(blocked?"false":"true")+")\'>\"+(blocked?"فك":"حظر")+"</button></td></tr>";'
+    + '}).join("");'
+    + '}'
+    + 'async function loadProducts(){'
+    + 'var d=await api("/admin/api/products");'
+    + 'document.getElementById("tProducts").innerHTML=(d.products||[]).map(function(p){'
+    + 'return "<tr><td>"+p.name+"</td><td>"+(p.brand||"-")+"</td><td>"+(p.is_privee?p.price:"4.000")+" KD</td><td><button class=\'btn\' onclick=\'toggleProd(\\\""+p.id+"\\\","+(!p.is_active)+")\'>\"+(p.is_active?"اخفاء":"اظهار")+"</button></td></tr>";'
+    + '}).join("");'
+    + '}'
+    + 'async function loadCustom(){'
+    + 'var d=await api("/admin/api/custom-requests");'
+    + 'document.getElementById("tCustom").innerHTML=(d.requests||[]).map(function(r){'
+    + 'return "<tr><td>"+(r.users&&r.users.phone||"-")+"</td><td>"+r.brand+"</td><td>"+r.perfume_name+"</td><td>"+(STATUS[r.status]||r.status)+"</td></tr>";'
+    + '}).join("");'
+    + '}'
+    + 'async function updateOrder(id,status){await api("/admin/api/orders/"+id+"/status",{method:"PATCH",body:JSON.stringify({status:status})});}'
+    + 'async function toggleBlock(id,block){await api("/admin/api/users/"+id+"/block",{method:"PATCH",body:JSON.stringify({is_blocked:block==="true"||block===true})});loadUsers();}'
+    + 'async function toggleProd(id,active){await api("/admin/api/products/"+id,{method:"PATCH",body:JSON.stringify({is_active:active==="true"||active===true})});loadProducts();}'
+    + 'async function saveCfg(key){var v=document.getElementById(key).value;await api("/admin/api/config/"+key,{method:"PATCH",body:JSON.stringify({value:v})});alert("Saved!");}'
+    + 'function logout(){localStorage.removeItem("admin_token");TOKEN=null;render();}'
+    + 'render();'
+    + 'if(TOKEN){loadDash();}'
+    + '</script></body></html>';
+  return html;
 }
 
 module.exports = router;
