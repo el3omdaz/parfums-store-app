@@ -156,6 +156,70 @@ tbody tr:last-child td{border-bottom:none}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 .donut-center{position:relative}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.2)}
+.modal::-webkit-scrollbar{width:6px}
+.modal::-webkit-scrollbar-thumb{background:#E2E8F0;border-radius:3px}
+.modal-header{padding:24px 28px;border-bottom:1px solid #F1F5F9;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1}
+.modal-title{font-size:18px;font-weight:700;color:#1A1A2E}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.modal-close:hover{background:#FEF2F2;color:#EF4444}
+.modal-body{padding:28px}
+.modal-footer{padding:20px 28px;border-top:1px solid #F1F5F9;display:flex;justify-content:flex-end;gap:12px}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-col{display:flex;flex-direction:column;gap:6px}
+.form-col.full{grid-column:span 2}
+.f-label{font-size:13px;font-weight:600;color:#374151}
+.f-input{background:#F8FAFC;border:1.5px solid #E2E8F0;color:#1A1A2E;padding:10px 14px;font-size:14px;outline:none;border-radius:10px;font-family:'Tajawal',sans-serif;transition:all 0.2s}
+.f-input:focus{border-color:#6366F1;background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,0.1)}
+.f-select{background:#F8FAFC;border:1.5px solid #E2E8F0;color:#1A1A2E;padding:10px 14px;font-size:14px;outline:none;border-radius:10px;font-family:'Tajawal',sans-serif;cursor:pointer;transition:all 0.2s;appearance:none}
+.f-select:focus{border-color:#6366F1}
+.f-toggle{display:flex;align-items:center;gap:10px;padding:12px;background:#F8FAFC;border-radius:10px;cursor:pointer}
+.f-toggle input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#6366F1}
+.f-toggle label{font-size:14px;color:#374151;cursor:pointer;font-weight:500}
+.price-field{display:none}
+.price-field.show{display:flex;flex-direction:column;gap:6px}
+
+/* IMAGE UPLOAD */
+.img-upload-area{border:2px dashed #E2E8F0;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative}
+.img-upload-area:hover,.img-upload-area.dragover{border-color:#6366F1;background:#F8F9FF}
+.img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.img-upload-icon{font-size:36px;margin-bottom:8px}
+.img-upload-text{font-size:14px;color:#64748B}
+.img-upload-sub{font-size:12px;color:#94A3B8;margin-top:4px}
+.img-preview{width:100%;max-height:200px;object-fit:contain;border-radius:10px;margin-top:12px;display:none}
+.upload-progress{height:4px;background:#E2E8F0;border-radius:2px;margin-top:12px;display:none}
+.upload-progress-bar{height:100%;background:linear-gradient(90deg,#6366F1,#8B5CF6);border-radius:2px;width:0%;transition:width 0.3s}
+
+/* CANCEL / SAVE BTNS */
+.btn-cancel{background:#F1F5F9;color:#64748B;border:none;padding:11px 24px;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;font-family:'Tajawal',sans-serif;transition:all 0.2s}
+.btn-cancel:hover{background:#E2E8F0}
+.btn-save{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;border:none;padding:11px 28px;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;font-family:'Tajawal',sans-serif;transition:opacity 0.2s}
+.btn-save:hover{opacity:0.88}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed}
+
+/* PRODUCT CARDS GRID */
+.products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.prod-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:all 0.2s;border:1.5px solid transparent}
+.prod-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.1);border-color:#E8EAFE}
+.prod-card.inactive{opacity:0.55}
+.prod-img{width:100%;height:140px;object-fit:cover;background:#F4F1EC;display:flex;align-items:center;justify-content:center;font-size:40px}
+.prod-img img{width:100%;height:100%;object-fit:cover}
+.prod-body{padding:14px}
+.prod-brand-tag{font-size:10px;letter-spacing:0.15em;color:#6366F1;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.prod-name{font-size:15px;font-weight:700;color:#1A1A2E;margin-bottom:4px}
+.prod-meta{display:flex;gap:6px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.prod-price{font-size:14px;font-weight:700;color:#059669}
+.prod-actions{display:flex;gap:6px}
+.prod-actions button{flex:1;padding:7px;font-size:12px;border-radius:8px;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-weight:600;transition:all 0.2s}
+.btn-edit{background:#EFF6FF;color:#3B82F6}.btn-edit:hover{background:#3B82F6;color:#fff}
+.btn-toggle{background:#FFF7ED;color:#F97316}.btn-toggle:hover{background:#F97316;color:#fff}
+.btn-toggle.active{background:#F0FDF4;color:#22C55E}.btn-toggle.active:hover{background:#22C55E;color:#fff}
 </style>
 </head>
 <body>
@@ -344,8 +408,21 @@ tbody tr:last-child td{border-bottom:none}
     <div class="table-card">
       <div class="table-header">
         <div class="table-title">🌸 المنتجات</div>
+        <div class="table-actions">
+          <select class="filter-select" onchange="filterProducts(this.value)" id="prodFilter">
+            <option value="">الكل</option>
+            <option value="fr">🇫🇷 فرنسية</option>
+            <option value="ar">🌙 عربية</option>
+            <option value="own">✦ Privée</option>
+          </select>
+          <button class="add-btn" onclick="openModal()">+ إضافة منتج</button>
+        </div>
       </div>
-      <div id="productsTable"><div class="empty-state"><span class="empty-icon">🌸</span><p>جاري التحميل...</p></div></div>
+      <div style="padding:20px">
+        <div class="products-grid" id="productsGrid">
+          <div class="empty-state" style="grid-column:span 3"><span class="empty-icon">🌸</span><p>جاري التحميل...</p></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -381,6 +458,99 @@ tbody tr:last-child td{border-bottom:none}
     </div>
   </div>
 
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">إضافة منتج جديد</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editProductId">
+
+      <!-- صورة المنتج -->
+      <div style="margin-bottom:20px">
+        <div class="f-label" style="margin-bottom:8px">صورة المنتج</div>
+        <div class="img-upload-area" id="uploadArea">
+          <input type="file" id="imageFile" accept="image/jpeg,image/png,image/webp" onchange="onImageSelect(this)">
+          <div class="img-upload-icon">🖼️</div>
+          <div class="img-upload-text">اسحب الصورة هنا أو اضغط للاختيار</div>
+          <div class="img-upload-sub">JPG, PNG, WebP — حتى 5 ميجابايت</div>
+          <img class="img-preview" id="imgPreview">
+        </div>
+        <div class="upload-progress" id="uploadProgress">
+          <div class="upload-progress-bar" id="uploadBar"></div>
+        </div>
+        <input type="hidden" id="imageUrl">
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label class="f-label">اسم العطر *</label>
+          <input class="f-input" id="pName" type="text" placeholder="مثال: N°5">
+        </div>
+        <div class="form-col">
+          <label class="f-label">الماركة</label>
+          <input class="f-input" id="pBrand" type="text" placeholder="مثال: Chanel">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label class="f-label">الأصل</label>
+          <select class="f-select" id="pOrigin" onchange="onOriginChange()">
+            <option value="fr">🇫🇷 فرنسية</option>
+            <option value="ar">🌙 عربية</option>
+            <option value="own">✦ Collection Privée</option>
+          </select>
+        </div>
+        <div class="form-col">
+          <label class="f-label">الجنس</label>
+          <select class="f-select" id="pGender">
+            <option value="م">رجالي</option>
+            <option value="ن">نسائي</option>
+            <option value="ي">يونيسكس</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col">
+          <label class="f-label">العائلة الشمية</label>
+          <select class="f-select" id="pFamily">
+            <option value="زهري">زهري</option>
+            <option value="خشبي">خشبي</option>
+            <option value="شرقي">شرقي</option>
+            <option value="عود">عود</option>
+            <option value="مسك">مسك</option>
+            <option value="حمضي">حمضي</option>
+          </select>
+        </div>
+        <div class="form-col price-field" id="priceField">
+          <label class="f-label">السعر (KD) — للـ Privée فقط</label>
+          <input class="f-input" id="pPrice" type="number" step="0.001" placeholder="0.000">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-col full">
+          <label class="f-label">وصف العطر (اختياري)</label>
+          <input class="f-input" id="pDesc" type="text" placeholder="وصف مختصر للعطر...">
+        </div>
+      </div>
+
+      <div class="f-toggle">
+        <input type="checkbox" id="pActive" checked>
+        <label for="pActive">منتج نشط وظاهر في المتجر</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+      <button class="btn-save" id="saveBtn" onclick="saveProduct()">💾 حفظ المنتج</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -536,22 +706,182 @@ async function loadUsers() {
     : '<div class="empty-state"><span class="empty-icon">👥</span><p>لا يوجد مستخدمين</p></div>';
 }
 
+var allProducts = [];
+var currentFilter = '';
+
 async function loadProducts() {
   var d = await api('/admin/api/products');
-  var products = d.products||[];
-  var rows = products.map(function(p){
-    return '<tr><td><strong>'+p.name+'</strong></td>'
-      +'<td>'+(p.brand||'—')+'</td>'
-      +'<td>'+(p.is_privee?'Collection Privée':(p.origin==='fr'?'🇫🇷 فرنسية':'🌙 عربية'))+'</td>'
-      +'<td>'+(p.is_privee?(p.price+' KD'):'4.000 KD')+'</td>'
-      +'<td>'+badge(p.is_active?'active':'cancelled')+'</td>'
-      +'<td>'
-      +'<button class="action-icon hide" onclick="toggleProduct(\''+p.id+'\','+!p.is_active+')" title="'+(p.is_active?'إخفاء':'إظهار')+'">'+(p.is_active?'👁️':'🙈')+'</button>'
-      +'</td></tr>';
+  allProducts = d.products || [];
+  renderProducts(allProducts);
+}
+
+function filterProducts(origin) {
+  currentFilter = origin;
+  var filtered = origin ? allProducts.filter(function(p){ return p.origin === origin; }) : allProducts;
+  renderProducts(filtered);
+}
+
+function renderProducts(products) {
+  var grid = document.getElementById('productsGrid');
+  if (!products.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:span 3"><span class="empty-icon">🌸</span><p>لا توجد منتجات</p></div>';
+    return;
+  }
+  grid.innerHTML = products.map(function(p) {
+    var originLabel = p.origin === 'own' ? '✦ Privée' : p.origin === 'fr' ? '🇫🇷 فرنسية' : '🌙 عربية';
+    var genderLabel = p.gender === 'م' ? 'رجالي' : p.gender === 'ن' ? 'نسائي' : 'يونيسكس';
+    var imgHtml = p.image_url
+      ? '<img src="'+p.image_url+'" style="width:100%;height:140px;object-fit:cover">'
+      : '<div style="width:100%;height:140px;background:#F4F1EC;display:flex;align-items:center;justify-content:center;font-size:40px">🌸</div>';
+    return '<div class="prod-card'+(p.is_active?'':' inactive')+'">'
+      + imgHtml
+      + '<div class="prod-body">'
+      + '<div class="prod-brand-tag">'+originLabel+' · '+(p.brand||'—')+'</div>'
+      + '<div class="prod-name">'+p.name+'</div>'
+      + '<div class="prod-meta">'
+      + badge(p.is_active ? 'active' : 'cancelled')
+      + '<span style="font-size:11px;color:#94A3B8">'+genderLabel+'</span>'
+      + '<span style="font-size:11px;color:#94A3B8">'+( p.family||'')+'</span>'
+      + '</div>'
+      + '<div class="prod-price">'+(p.is_privee ? (p.price||'—')+' KD' : '4.000 KD')+'</div>'
+      + '<div class="prod-actions" style="margin-top:10px">'
+      + '<button class="btn-edit" onclick="openModal(\''+p.id+'\')">تعديل</button>'
+      + '<button class="btn-toggle'+(p.is_active?' active':'')+'" onclick="toggleProduct(\''+p.id+'\','+!p.is_active+')">'+(p.is_active?'إخفاء':'إظهار')+'</button>'
+      + '</div></div></div>';
   }).join('');
-  document.getElementById('productsTable').innerHTML = rows
-    ? '<table><thead><tr><th>الاسم</th><th>الماركة</th><th>النوع</th><th>السعر</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table>'
-    : '<div class="empty-state"><span class="empty-icon">🌸</span><p>لا توجد منتجات</p></div>';
+}
+
+// ===== MODAL =====
+function openModal(productId) {
+  resetModal();
+  if (productId) {
+    var p = allProducts.find(function(x){ return x.id === productId; });
+    if (!p) return;
+    document.getElementById('modalTitle').textContent = 'تعديل المنتج';
+    document.getElementById('editProductId').value = p.id;
+    document.getElementById('pName').value = p.name || '';
+    document.getElementById('pBrand').value = p.brand || '';
+    document.getElementById('pOrigin').value = p.origin || 'fr';
+    document.getElementById('pGender').value = p.gender || 'ي';
+    document.getElementById('pFamily').value = p.family || 'زهري';
+    document.getElementById('pPrice').value = p.price || '';
+    document.getElementById('pDesc').value = p.description || '';
+    document.getElementById('pActive').checked = p.is_active !== false;
+    document.getElementById('imageUrl').value = p.image_url || '';
+    if (p.image_url) {
+      var prev = document.getElementById('imgPreview');
+      prev.src = p.image_url;
+      prev.style.display = 'block';
+    }
+    onOriginChange();
+  }
+  document.getElementById('productModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('productModal').classList.remove('show');
+  resetModal();
+}
+
+function resetModal() {
+  document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
+  document.getElementById('editProductId').value = '';
+  document.getElementById('pName').value = '';
+  document.getElementById('pBrand').value = '';
+  document.getElementById('pOrigin').value = 'fr';
+  document.getElementById('pGender').value = 'ي';
+  document.getElementById('pFamily').value = 'زهري';
+  document.getElementById('pPrice').value = '';
+  document.getElementById('pDesc').value = '';
+  document.getElementById('pActive').checked = true;
+  document.getElementById('imageUrl').value = '';
+  document.getElementById('imageFile').value = '';
+  document.getElementById('imgPreview').style.display = 'none';
+  document.getElementById('imgPreview').src = '';
+  document.getElementById('uploadProgress').style.display = 'none';
+  document.getElementById('uploadBar').style.width = '0%';
+  document.getElementById('priceField').classList.remove('show');
+  document.getElementById('saveBtn').disabled = false;
+}
+
+function onOriginChange() {
+  var val = document.getElementById('pOrigin').value;
+  var pf = document.getElementById('priceField');
+  if (val === 'own') pf.classList.add('show');
+  else pf.classList.remove('show');
+}
+
+async function onImageSelect(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var prev = document.getElementById('imgPreview');
+  prev.src = URL.createObjectURL(file);
+  prev.style.display = 'block';
+  var prog = document.getElementById('uploadProgress');
+  var bar = document.getElementById('uploadBar');
+  prog.style.display = 'block';
+  bar.style.width = '30%';
+  try {
+    var formData = new FormData();
+    formData.append('image', file);
+    bar.style.width = '60%';
+    var r = await fetch('/api/upload/product-image', {
+      method: 'POST',
+      headers: { 'x-admin-token': TOKEN },
+      body: formData
+    });
+    bar.style.width = '90%';
+    var d = await r.json();
+    if (d.url) {
+      document.getElementById('imageUrl').value = d.url;
+      bar.style.width = '100%';
+      setTimeout(function(){ prog.style.display = 'none'; }, 600);
+    } else {
+      alert('فشل رفع الصورة: ' + (d.error || 'خطأ غير معروف'));
+      prog.style.display = 'none';
+    }
+  } catch(e) {
+    alert('فشل رفع الصورة');
+    prog.style.display = 'none';
+  }
+}
+
+async function saveProduct() {
+  var name = document.getElementById('pName').value.trim();
+  if (!name) { alert('اسم العطر مطلوب'); return; }
+  var saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = '⏳ جاري الحفظ...';
+  var origin = document.getElementById('pOrigin').value;
+  var data = {
+    name: name,
+    brand: document.getElementById('pBrand').value.trim(),
+    origin: origin,
+    gender: document.getElementById('pGender').value,
+    family: document.getElementById('pFamily').value,
+    description: document.getElementById('pDesc').value.trim(),
+    is_active: document.getElementById('pActive').checked,
+    is_privee: origin === 'own',
+    image_url: document.getElementById('imageUrl').value || null,
+    price: origin === 'own' ? parseFloat(document.getElementById('pPrice').value) || null : null
+  };
+  try {
+    var editId = document.getElementById('editProductId').value;
+    var url = editId ? '/admin/api/products/'+editId : '/admin/api/products';
+    var method = editId ? 'PATCH' : 'POST';
+    var r = await api(url, { method: method, body: JSON.stringify(data) });
+    if (r.product) {
+      closeModal();
+      await loadProducts();
+      filterProducts(currentFilter);
+    } else {
+      alert('فشل الحفظ: ' + (r.error || 'خطأ'));
+    }
+  } catch(e) {
+    alert('فشل الحفظ');
+  }
+  saveBtn.disabled = false;
+  saveBtn.textContent = '💾 حفظ المنتج';
 }
 
 async function loadCustom() {
