@@ -16,7 +16,12 @@ const PORT = process.env.PORT || 3000;
 // Security
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.static('public'));
-app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET','POST','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','x-admin-token']
+}));
+app.options('*', cors());
 app.use(express.json());
 
 // Rate limiting
