@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Parfums — متجر العطور</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--ink:#0A0A0A;--white:#FAFAF8;--pearl:#F4F1EC;--stone:#E8E4DD;--warm:#C8B89A;--mist:#8C8278;--sub:#D6D0C8;--gold:#B8A070}
+body{font-family:'Montserrat',sans-serif;background:var(--white);color:var(--ink);overflow-x:hidden}
+
+/* ===== PAGES ===== */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--white);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;padding:10px 20px;opacity:0;transition:all 0.3s;white-space:nowrap;z-index:999;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ===== OTP PAGE ===== */
+.otp-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--ink);padding:32px 24px}
+.otp-logo{font-family:'EB Garamond',serif;font-size:32px;font-weight:400;color:var(--white);letter-spacing:0.3em;text-transform:uppercase;margin-bottom:8px}
+.otp-logo em{font-style:italic;color:var(--warm)}
+.otp-sub{font-size:10px;letter-spacing:0.3em;color:var(--mist);margin-bottom:48px;text-transform:uppercase}
+.otp-card{background:var(--white);padding:32px 28px;width:100%;max-width:340px}
+.otp-title{font-family:'EB Garamond',serif;font-size:20px;color:var(--ink);margin-bottom:6px}
+.otp-desc{font-size:11px;color:var(--mist);letter-spacing:0.1em;line-height:1.8;margin-bottom:24px}
+.otp-label{font-size:9px;letter-spacing:0.25em;color:var(--mist);text-transform:uppercase;margin-bottom:6px;display:block}
+.otp-input{width:100%;border:0.5px solid var(--stone);background:var(--pearl);padding:13px 14px;font-family:'Montserrat',sans-serif;font-size:16px;color:var(--ink);outline:none;margin-bottom:12px;transition:border-color 0.2s}
+.otp-input:focus{border-color:var(--ink)}
+.otp-btn{width:100%;background:var(--ink);color:var(--white);border:none;padding:14px;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s;margin-bottom:10px}
+.otp-btn:active{opacity:0.7}
+.otp-btn:disabled{opacity:0.4;cursor:not-allowed}
+.otp-note{font-size:10px;color:var(--mist);text-align:center;letter-spacing:0.1em;line-height:1.8}
+.otp-step{display:none}.otp-step.show{display:block}
+.otp-err{color:#C85050;font-size:10px;letter-spacing:0.1em;margin-bottom:10px;display:none}
+.skip-btn{background:none;border:none;color:var(--mist);font-size:10px;letter-spacing:0.15em;cursor:pointer;margin-top:16px;text-decoration:underline;font-family:'Montserrat',sans-serif}
+
+/* ===== STORE PAGE ===== */
+/* TICKER */
+.ticker-wrap{background:var(--ink);padding:8px 0;overflow:hidden}
+.ticker-inner{display:flex;white-space:nowrap;animation:tick 28s linear infinite}
+.t-item{display:inline-flex;align-items:center;gap:10px;padding:0 24px;font-size:8px;letter-spacing:0.28em;text-transform:uppercase;color:var(--white);flex-shrink:0}
+.t-dot{width:3px;height:3px;border-radius:50%;background:var(--warm);flex-shrink:0}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* PROMO */
+.promo{background:var(--warm);height:40px;display:flex;align-items:center;position:relative;overflow:hidden}
+.promo-slides{display:flex;transition:transform 0.4s ease;height:100%;width:100%}
+.promo-slide{min-width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 32px}
+.promo-slide p{font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--ink);font-weight:500;white-space:nowrap}
+.promo-slide span{font-size:8px;letter-spacing:0.12em;color:rgba(10,10,10,0.55)}
+.p-btn{position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(10,10,10,0.4);font-size:14px;padding:0 8px;z-index:2}
+.p-prev{left:0}.p-next{right:0}
+
+/* NAV */
+.nav{background:var(--white);border-bottom:1px solid var(--ink);position:sticky;top:0;z-index:60}
+.nav-top{display:flex;justify-content:space-between;align-items:center;padding:12px 18px 10px}
+.logo{font-family:'EB Garamond',serif;font-size:19px;font-weight:400;letter-spacing:0.3em;color:var(--ink);text-transform:uppercase}
+.logo em{font-style:italic;font-weight:500}
+.nav-icons{display:flex;gap:6px;align-items:center}
+.nav-ico{background:none;border:none;cursor:pointer;color:var(--ink);font-size:20px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;position:relative}
+.cart-bdg{position:absolute;top:-2px;right:-2px;background:var(--ink);color:var(--white);border-radius:50%;width:14px;height:14px;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif}
+
+/* TABS ROW 1 */
+.trow1{display:flex;border-bottom:0.5px solid var(--sub)}
+.t1{flex:1;padding:9px 2px;text-align:center;font-size:7px;letter-spacing:0.16em;text-transform:uppercase;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:400;color:var(--mist);transition:all 0.2s}
+.t1 s{display:block;font-size:11px;margin-bottom:2px;text-decoration:none}
+.t1.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:500}
+.t1.privee{background:var(--ink);color:var(--gold);font-family:'EB Garamond',serif;font-size:9px;font-style:italic;letter-spacing:0.12em;border-bottom-color:transparent;text-transform:none}
+.t1.privee.on{border-bottom-color:var(--gold);color:#E8D8B8}
+
+/* TABS ROW 2 */
+.trow2{display:flex;background:var(--pearl);border-bottom:0.5px solid var(--stone)}
+.t2{flex:1;padding:8px 2px;text-align:center;font-size:6.5px;letter-spacing:0.16em;text-transform:uppercase;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:400;color:var(--mist);transition:all 0.2s}
+.t2.on{color:var(--ink);border-bottom-color:var(--ink);background:var(--white)}
+
+/* TABS ROW 3 */
+.trow3{display:flex;overflow-x:auto;border-bottom:1px solid var(--stone);scrollbar-width:none;background:var(--white)}
+.trow3::-webkit-scrollbar{display:none}
+.t3{flex-shrink:0;padding:7px 12px;font-size:6.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--mist);border:none;border-bottom:1.5px solid transparent;cursor:pointer;white-space:nowrap;background:none;font-family:'Montserrat',sans-serif;transition:all 0.2s}
+.t3.on{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* HERO */
+.hero{background:var(--ink);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:260px;height:260px;border-radius:50%;border:0.5px solid rgba(200,184,154,0.1)}
+.h-eye{font-size:7px;letter-spacing:0.4em;color:var(--warm);text-transform:uppercase;margin-bottom:9px}
+.h-ttl{font-family:'EB Garamond',serif;font-size:28px;color:var(--white);letter-spacing:0.07em;text-transform:uppercase;line-height:1.1}
+.h-ttl em{font-style:italic;display:block;font-size:32px;letter-spacing:0.04em}
+.h-ttl.privee-ttl em{color:var(--gold)}
+.h-ln{width:28px;height:0.5px;background:var(--warm);margin:12px auto}
+.h-ln.gold{background:var(--gold)}
+.h-sub{font-size:7px;letter-spacing:0.14em;color:var(--mist);line-height:1.9}
+.h-cta{border:0.5px solid var(--white);color:var(--white);background:transparent;font-family:'Montserrat',sans-serif;font-size:7px;letter-spacing:0.3em;text-transform:uppercase;padding:9px 22px;cursor:pointer;transition:all 0.3s;margin-top:16px;display:inline-block}
+.h-cta:active{background:var(--white);color:var(--ink)}
+.h-cta.gold{border-color:var(--gold);color:var(--gold)}
+
+/* PRICE BAR */
+.price-bar{background:var(--pearl);border-bottom:0.5px solid var(--stone);padding:9px 18px;display:flex;justify-content:space-between;align-items:center}
+.pb-info{font-size:7px;letter-spacing:0.18em;color:var(--mist);text-transform:uppercase}
+.pb-price{font-family:'EB Garamond',serif;font-size:18px;color:var(--ink)}
+.pb-price small{font-family:'Montserrat',sans-serif;font-size:8px;color:var(--mist)}
+.pb-del{font-size:7px;color:var(--mist);letter-spacing:0.12em;margin-top:2px}
+
+/* CUSTOM REQUEST */
+.custom-sec{padding:14px 13px;background:var(--pearl);border-bottom:1px solid var(--stone)}
+.sec-eye{font-size:7px;letter-spacing:0.35em;text-transform:uppercase;color:var(--warm);margin-bottom:8px}
+.custom-card{background:var(--white);border:0.5px solid var(--stone);overflow:hidden}
+.c-hdr{background:var(--ink);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.c-hdr-text h3{font-family:'EB Garamond',serif;font-size:15px;color:var(--white)}
+.c-hdr-text p{font-size:7px;color:rgba(200,184,154,0.5);margin-top:2px;letter-spacing:0.12em;text-transform:uppercase}
+.c-body{padding:13px}
+.c-desc{font-size:8px;color:var(--mist);line-height:1.9;margin-bottom:13px;letter-spacing:0.08em}
+.f-lbl{font-size:7px;letter-spacing:0.22em;color:var(--mist);text-transform:uppercase;margin-bottom:4px;display:block;margin-top:10px}
+.f-lbl:first-child{margin-top:0}
+.f-sel{width:100%;border:0.5px solid var(--stone);padding:10px 11px;font-family:'Montserrat',sans-serif;font-size:12px;color:var(--ink);background:var(--white);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238C8278' stroke-width='1.2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 10px center}
+.f-inp{width:100%;border:0.5px solid var(--stone);padding:10px 11px;font-family:'Montserrat',sans-serif;font-size:12px;color:var(--ink);background:var(--white);outline:none;display:none}
+.f-inp.show{display:block;border-top:none}
+.f-inp:focus,.f-sel:focus{border-color:var(--ink)}
+.f-note{font-size:7px;color:var(--mist);line-height:1.8;margin:10px 0;padding:9px;background:var(--pearl);border:0.5px solid var(--stone);letter-spacing:0.08em}
+.wa-btn{width:100%;background:#25A560;color:var(--white);border:none;padding:12px;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
+.send-btn{width:100%;background:var(--ink);color:var(--white);border:none;padding:12px;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer}
+
+/* COUNT BAR */
+.cbar{display:flex;justify-content:space-between;align-items:center;padding:9px 15px;border-bottom:0.5px solid var(--stone);background:var(--white)}
+.clbl{font-size:7px;letter-spacing:0.22em;color:var(--mist);text-transform:uppercase}
+
+/* PRODUCT GRID */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--stone)}
+.pcard{background:var(--white);padding:12px 11px 10px;position:relative;cursor:pointer}
+.pimg{height:160px;background:var(--pearl);display:flex;align-items:center;justify-content:center;margin-bottom:10px;overflow:hidden}
+.pimg img{width:100%;height:100%;object-fit:cover}
+.pimg-placeholder{font-size:40px}
+.wsh{position:absolute;top:9px;right:9px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--sub);transition:color 0.2s}
+.wsh.on{color:var(--ink)}
+.ntag{position:absolute;top:9px;left:9px;background:var(--ink);color:var(--white);font-size:6px;letter-spacing:0.18em;padding:2px 5px;text-transform:uppercase}
+.ntag.gold{background:var(--gold);color:var(--ink)}
+.pbr{font-size:6.5px;letter-spacing:0.26em;color:var(--mist);text-transform:uppercase;margin-bottom:2px}
+.pbr.gold{color:var(--gold);font-family:'EB Garamond',serif;font-style:italic;font-size:8px;text-transform:none;letter-spacing:0.15em}
+.pnm{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink);line-height:1.2;margin-bottom:4px}
+.pmeta{display:flex;gap:3px;margin-bottom:7px;flex-wrap:wrap;align-items:center}
+.gp{font-size:5.5px;letter-spacing:0.12em;padding:2px 5px;text-transform:uppercase}
+.gm{background:#EAECF0;color:#444860}.gf{background:#F0EAED;color:#604448}.gu{background:#EEF0EA;color:#485044}
+.pfoot{display:flex;justify-content:space-between;align-items:center;border-top:0.5px solid var(--stone);padding-top:7px}
+.ppr{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink)}
+.ppr small{font-size:7px;font-family:'Montserrat',sans-serif;color:var(--mist)}
+.abtn{background:var(--ink);color:var(--white);border:none;cursor:pointer;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:17px;transition:opacity 0.15s}
+.abtn.gold{background:var(--gold);color:var(--ink)}
+.abtn:active{opacity:0.6}
+.empty-sec{padding:48px 20px;text-align:center;color:var(--mist);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;line-height:2.4;background:var(--white)}
+.loading-grid{padding:40px;text-align:center;color:var(--mist);font-size:10px;letter-spacing:0.2em;background:var(--white)}
+
+/* BOTTOM NAV */
+.bnav{background:var(--white);border-top:1px solid var(--ink);display:flex;justify-content:space-around;padding:10px 0 20px;position:fixed;bottom:0;left:0;right:0;z-index:60}
+.bb{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--mist);font-family:'Montserrat',sans-serif;font-size:6px;letter-spacing:0.14em;text-transform:uppercase}
+.bb.on{color:var(--ink);font-weight:500}
+.bb svg{width:20px;height:20px}
+.store-content{padding-bottom:72px}
+
+/* ===== CART PAGE ===== */
+.cart-page{padding-bottom:120px}
+.cart-header{padding:20px 18px;border-bottom:1px solid var(--stone);display:flex;align-items:center;gap:14px}
+.back-btn{background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink)}
+.cart-title{font-family:'EB Garamond',serif;font-size:22px;font-weight:400}
+.cart-empty{padding:60px 24px;text-align:center;color:var(--mist);font-size:10px;letter-spacing:0.2em;line-height:2.4;text-transform:uppercase}
+.cart-empty .empty-icon{font-size:48px;display:block;margin-bottom:16px}
+.cart-item{display:flex;gap:12px;padding:16px;border-bottom:0.5px solid var(--stone);align-items:center}
+.cart-item-img{width:64px;height:64px;background:var(--pearl);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+.cart-item-img img{width:100%;height:100%;object-fit:cover}
+.cart-item-info{flex:1}
+.cart-item-brand{font-size:7px;letter-spacing:0.22em;color:var(--mist);text-transform:uppercase;margin-bottom:2px}
+.cart-item-name{font-family:'EB Garamond',serif;font-size:15px;color:var(--ink);margin-bottom:4px}
+.cart-item-price{font-family:'EB Garamond',serif;font-size:14px;color:var(--ink)}
+.cart-item-price small{font-size:7px;font-family:'Montserrat',sans-serif;color:var(--mist)}
+.cart-rm{background:none;border:none;cursor:pointer;font-size:16px;color:var(--mist);padding:4px;transition:color 0.2s}
+.cart-rm:active{color:#C85050}
+.cart-summary{background:var(--pearl);margin:16px;padding:16px;border:0.5px solid var(--stone)}
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--stone)}
+.sum-row:last-child{border-bottom:none;font-weight:500}
+.sum-lbl{font-size:12px;color:var(--mist);letter-spacing:0.1em}
+.sum-val{font-family:'EB Garamond',serif;font-size:16px;color:var(--ink)}
+.sum-total .sum-lbl{color:var(--ink);font-size:13px}
+.sum-total .sum-val{font-size:20px}
+.checkout-wrap{position:fixed;bottom:0;left:0;right:0;padding:16px;background:var(--white);border-top:1px solid var(--stone)}
+.checkout-btn{width:100%;background:var(--ink);color:var(--white);border:none;padding:15px;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s}
+.checkout-btn:active{opacity:0.7}
+.area-select{width:100%;border:0.5px solid var(--stone);padding:10px 14px;font-family:'Montserrat',sans-serif;font-size:12px;color:var(--ink);background:var(--white);outline:none;margin-bottom:10px;cursor:pointer;appearance:none}
+
+/* ===== PRODUCT DETAIL PAGE ===== */
+.detail-page{padding-bottom:100px}
+.detail-img{width:100%;height:300px;background:var(--pearl);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.detail-img img{width:100%;height:100%;object-fit:cover}
+.detail-body{padding:20px}
+.detail-brand{font-size:9px;letter-spacing:0.28em;color:var(--mist);text-transform:uppercase;margin-bottom:4px}
+.detail-name{font-family:'EB Garamond',serif;font-size:28px;color:var(--ink);margin-bottom:8px;line-height:1.1}
+.detail-meta{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.detail-tag{font-size:8px;letter-spacing:0.15em;color:var(--mist);border:0.5px solid var(--sub);padding:3px 8px;text-transform:uppercase}
+.detail-price{font-family:'EB Garamond',serif;font-size:32px;color:var(--ink);margin-bottom:4px}
+.detail-price small{font-size:12px;font-family:'Montserrat',sans-serif;color:var(--mist)}
+.detail-size{font-size:9px;color:var(--mist);letter-spacing:0.15em;margin-bottom:20px}
+.detail-desc{font-size:12px;color:var(--mist);line-height:1.9;letter-spacing:0.08em;margin-bottom:24px;padding-bottom:20px;border-bottom:0.5px solid var(--stone)}
+.detail-add{position:fixed;bottom:0;left:0;right:0;padding:16px;background:var(--white);border-top:1px solid var(--stone);display:flex;gap:10px}
+.detail-wish{width:48px;height:48px;border:0.5px solid var(--stone);background:var(--white);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.detail-wish.on{background:var(--ink);color:var(--white)}
+.detail-bag{flex:1;background:var(--ink);color:var(--white);border:none;padding:14px;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s}
+.detail-bag:active{opacity:0.7}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== OTP PAGE ===== -->
+<div class="page active" id="page-otp">
+  <div class="otp-wrap">
+    <div class="otp-logo">Par<em>fums</em></div>
+    <div class="otp-sub">Kuwait · متجر العطور</div>
+
+    <div class="otp-card">
+      <!-- STEP 1: رقم الهاتف -->
+      <div class="otp-step show" id="step1">
+        <div class="otp-title">أهلاً بك</div>
+        <div class="otp-desc">أدخل رقم هاتفك الكويتي لتسجيل الدخول أو إنشاء حساب جديد</div>
+        <label class="otp-label">رقم الهاتف</label>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div style="background:var(--pearl);border:0.5px solid var(--stone);padding:13px 12px;font-size:14px;color:var(--mist);white-space:nowrap;font-family:'Montserrat',sans-serif">+965</div>
+          <input class="otp-input" id="phoneInput" type="tel" placeholder="XXXXXXXX" maxlength="8" style="margin-bottom:0" onkeydown="if(event.key==='Enter')sendOTP()">
+        </div>
+        <p class="otp-err" id="phoneErr">رقم الهاتف غير صحيح</p>
+        <button class="otp-btn" id="sendBtn" onclick="sendOTP()">إرسال الكود عبر واتساب</button>
+        <p class="otp-note">سيصلك كود تحقق مكون من 6 أرقام عبر واتساب</p>
+      </div>
+
+      <!-- STEP 2: كود التحقق -->
+      <div class="otp-step" id="step2">
+        <div class="otp-title">أدخل الكود</div>
+        <div class="otp-desc" id="otpDesc">أرسلنا كود التحقق لرقمك عبر واتساب</div>
+        <label class="otp-label">كود التحقق</label>
+        <input class="otp-input" id="otpInput" type="tel" placeholder="• • • • • •" maxlength="6" onkeydown="if(event.key==='Enter')verifyOTP()">
+        <p class="otp-err" id="otpErr">الكود غير صحيح أو منتهي الصلاحية</p>
+        <button class="otp-btn" id="verifyBtn" onclick="verifyOTP()">تأكيد الدخول</button>
+        <p class="otp-note">لم يصلك الكود؟ <span style="color:var(--ink);cursor:pointer;text-decoration:underline" onclick="backToPhone()">إعادة الإرسال</span></p>
+      </div>
+    </div>
+
+    <button class="skip-btn" onclick="skipLogin()">تصفح بدون تسجيل دخول</button>
+  </div>
+</div>
+
+<!-- ===== STORE PAGE ===== -->
+<div class="page" id="page-store">
+  <div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
+
+  <div class="promo" id="promoEl">
+    <button class="p-btn p-prev" onclick="pGo(pIdx-1)">❯</button>
+    <div class="promo-slides" id="pSlides"></div>
+    <button class="p-btn p-next" onclick="pGo(pIdx+1)">❮</button>
+  </div>
+
+  <div class="nav">
+    <div class="nav-top">
+      <div style="display:flex;gap:4px">
+        <button class="nav-ico" onclick="showSearch()">🔍</button>
+      </div>
+      <div class="logo">Par<em>fums</em></div>
+      <div class="nav-icons">
+        <button class="nav-ico" onclick="showPage('page-cart')">
+          🛍️<span class="cart-bdg" id="cartBdg">0</span>
+        </button>
+        <button class="nav-ico" onclick="toggleUserMenu()" id="userIco">👤</button>
+      </div>
+    </div>
+    <div class="trow1">
+      <button class="t1 on" onclick="setO(this,'all')"><s>✦</s>الجميع</button>
+      <button class="t1" onclick="setO(this,'fr')"><s>🇫🇷</s>فرنسية</button>
+      <button class="t1" onclick="setO(this,'ar')"><s>🌙</s>عربية</button>
+      <button class="t1 privee" onclick="setO(this,'own')"><s>◈</s>Collection Privée</button>
+    </div>
+    <div class="trow2">
+      <button class="t2 on" onclick="setG(this,'all')">الجميع</button>
+      <button class="t2" onclick="setG(this,'م')">رجالي</button>
+      <button class="t2" onclick="setG(this,'ن')">نسائي</button>
+      <button class="t2" onclick="setG(this,'ي')">يونيسكس</button>
+    </div>
+    <div class="trow3" id="r3"></div>
+  </div>
+
+  <div class="store-content">
+    <div id="heroEl"></div>
+    <div id="priceBarEl"></div>
+    <div id="customSecEl"></div>
+    <div class="cbar">
+      <span class="clbl" id="cntLbl">جاري التحميل...</span>
+    </div>
+    <div id="prodGrid">
+      <div class="loading-grid">جاري تحميل العطور...</div>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <button class="bb on" onclick="showPage('page-store')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      الرئيسية
+    </button>
+    <button class="bb" onclick="scrollToCustom()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      مخصص
+    </button>
+    <button class="bb" onclick="showPage('page-cart')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+      السلة
+    </button>
+    <button class="bb" onclick="showWishlist()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      مفضلة
+    </button>
+    <button class="bb" onclick="showProfile()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      حسابي
+    </button>
+  </div>
+</div>
+
+<!-- ===== CART PAGE ===== -->
+<div class="page" id="page-cart">
+  <div class="cart-page">
+    <div class="cart-header">
+      <button class="back-btn" onclick="showPage('page-store')">←</button>
+      <div class="cart-title">سلة التسوق</div>
+    </div>
+    <div id="cartContent"></div>
+  </div>
+</div>
+
+<!-- ===== DETAIL PAGE ===== -->
+<div class="page" id="page-detail">
+  <div class="detail-page">
+    <div style="padding:14px 16px;border-bottom:0.5px solid var(--stone);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:var(--white);z-index:10">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div style="font-family:'EB Garamond',serif;font-size:17px">تفاصيل العطر</div>
+    </div>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<script>
+var API = 'https://parfums-store-app-production.up.railway.app';
+var TOKEN = localStorage.getItem('parfums_token');
+var cart = JSON.parse(localStorage.getItem('parfums_cart') || '[]');
+var wished = new Set(JSON.parse(localStorage.getItem('parfums_wished') || '[]'));
+var allProducts = [];
+var S = {o:'all', g:'all', b:'الكل'};
+var pIdx = 0;
+var prevPage = 'page-store';
+var BRAND_TYPES = {
+  'Chanel':['N°5','Coco Mademoiselle','Bleu de Chanel','Chance','Allure Homme Sport','Gabrielle','Coco Noir','أخرى'],
+  'Dior':['Sauvage',"J'adore",'Miss Dior','Homme Intense','Fahrenheit','Hypnotic Poison','أخرى'],
+  'Creed':['Aventus','Silver Mountain Water','Green Irish Tweed','Viking','Millesime Imperial','أخرى'],
+  'Tom Ford':['Black Orchid','Oud Wood','Tobacco Vanille','Lost Cherry','أخرى'],
+  'Guerlain':['Shalimar','La Petite Robe Noire','Mon Guerlain','Habit Rouge','أخرى'],
+  'Hermès':["Terre d'Hermès","Twilly d'Hermès","Un Jardin sur le Nil",'أخرى'],
+  'Byredo':["Bal d'Afrique",'Gypsy Water','Mojave Ghost','أخرى'],
+  'Le Labo':['Santal 33','Rose 31','Another 13','أخرى'],
+  'Mancera':['Cedrat Boise','Red Tobacco','Instant Crush','أخرى'],
+  'Montale':['Intense Café','Black Aoud','Roses Musk','أخرى'],
+  'Amouage':['Interlude Man','Gold Woman','Reflection','Epic','أخرى'],
+  'Arabian Oud':['Mukhallat','Musk Al Aroos','أخرى'],
+  'Ajmal':['Dahn Al Oudh','Wisal','Bakhoor','أخرى'],
+  'Rasasi':['La Yuqawam','Dhanal Oudh','Hawas','أخرى'],
+  'Lattafa':['Khamrah','Oud for Glory','Raghba','أخرى'],
+};
+
+var PROMOS = [
+  {m:'🎁 شحن مجاني', s:'على الطلبات فوق ١٥ د.ك'},
+  {m:'✦ Collection Privée', s:'تركيباتنا الحصرية — متوفرة الآن'},
+  {m:'كل العطور ٤ د.ك', s:'٥٠ مل · توصيل ٢ د.ك'},
+  {m:'KNET · Apple Pay', s:'دفع آمن وسريع'},
+];
+var TICKERS = ['كل العطور ٤ د.ك · ٥٠ مل','شحن مجاني فوق ١٥ د.ك','اطلب عطرك المخصص من أي ماركة','Collection Privée — تركيباتنا الحصرية','توصيل ٢ د.ك لجميع مناطق الكويت'];
+var CFG = {
+  all:{eye:'Collection Complète',t:"L'Art du<em>Parfum</em>",sub:'عطور مختارة من أشهر الماركات · ٥٠ مل · ٤ د.ك',b:['الكل','زهري','خشبي','شرقي','عود','مسك']},
+  fr:{eye:'Maisons Françaises',t:"L'Élégance<em>Française</em>",sub:'مجموعة مختارة من أعرق الدور الفرنسية',b:['الكل','Chanel','Dior','Guerlain','Hermès','Tom Ford']},
+  ar:{eye:'البيوت العربية الفاخرة',t:"روح<em>الشرق</em>",sub:'مجموعة مختارة من أشهر دور العطور العربية',b:['الكل','Amouage','Arabian Oud','Ajmal','Rasasi','Lattafa']},
+  own:{eye:'Collection Privée · Parfums',t:"إبداعاتنا<em>الحصرية</em>",sub:'تركيبات فريدة بتوقيعنا — لا تجدها في أي مكان آخر',b:['الكل','زهري','خشبي','شرقي','عود','مسك']},
+};
+
+/* ===== INIT ===== */
+(function init(){
+  // Ticker
+  var t = document.getElementById('ticker');
+  var all = [...TICKERS,...TICKERS];
+  t.innerHTML = all.map(x=>'<span class="t-item"><span class="t-dot"></span>'+x+'</span>').join('');
+  // Promo
+  var sl = document.getElementById('pSlides');
+  sl.innerHTML = PROMOS.map(p=>'<div class="promo-slide"><p>'+p.m+'</p><span>· '+p.s+'</span></div>').join('');
+  setInterval(()=>pGo(pIdx+1), 4000);
+  // Check login
+  if(TOKEN) {
+    showPage('page-store');
+    loadProducts();
+  }
+  updateCartBadge();
+})();
+
+function pGo(i){
+  pIdx = (i+PROMOS.length)%PROMOS.length;
+  document.getElementById('pSlides').style.transform = 'translateX('+pIdx*100+'%)';
+}
+
+/* ===== AUTH ===== */
+async function sendOTP(){
+  var phone = document.getElementById('phoneInput').value.trim();
+  if(phone.length !== 8 || !/^\d+$/.test(phone)){
+    document.getElementById('phoneErr').style.display='block';
+    return;
+  }
+  document.getElementById('phoneErr').style.display='none';
+  var btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+  btn.textContent = 'جاري الإرسال...';
+  try {
+    var r = await fetch(API+'/api/auth/send-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({phone: phone})
+    });
+    var d = await r.json();
+    if(d.success){
+      document.getElementById('step1').classList.remove('show');
+      document.getElementById('step2').classList.add('show');
+      document.getElementById('otpDesc').textContent = 'أرسلنا كود التحقق لرقم +965'+phone+' عبر واتساب';
+    } else {
+      showToast(d.error || 'فشل الإرسال');
+    }
+  } catch(e){
+    showToast('تحقق من الاتصال بالإنترنت');
+  }
+  btn.disabled = false;
+  btn.textContent = 'إرسال الكود عبر واتساب';
+}
+
+async function verifyOTP(){
+  var phone = document.getElementById('phoneInput').value.trim();
+  var code = document.getElementById('otpInput').value.trim();
+  if(code.length !== 6){ document.getElementById('otpErr').style.display='block'; return; }
+  document.getElementById('otpErr').style.display='none';
+  var btn = document.getElementById('verifyBtn');
+  btn.disabled = true; btn.textContent = 'جاري التحقق...';
+  try {
+    var r = await fetch(API+'/api/auth/verify-otp', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({phone: phone, code: code})
+    });
+    var d = await r.json();
+    if(d.token){
+      TOKEN = d.token;
+      localStorage.setItem('parfums_token', TOKEN);
+      showPage('page-store');
+      loadProducts();
+    } else {
+      document.getElementById('otpErr').style.display='block';
+    }
+  } catch(e){ showToast('خطأ في الاتصال'); }
+  btn.disabled = false; btn.textContent = 'تأكيد الدخول';
+}
+
+function backToPhone(){ document.getElementById('step2').classList.remove('show'); document.getElementById('step1').classList.add('show'); }
+function skipLogin(){ showPage('page-store'); loadProducts(); }
+function toggleUserMenu(){
+  if(TOKEN){ if(confirm('تسجيل الخروج؟')){ TOKEN=null; localStorage.removeItem('parfums_token'); showPage('page-otp'); } }
+  else { showPage('page-otp'); }
+}
+function showProfile(){ if(!TOKEN){ showPage('page-otp'); } else { showToast('حسابي — قريباً'); } }
+function showWishlist(){ showToast('المفضلة — '+wished.size+' عطر'); }
+function showSearch(){ showToast('البحث — قريباً'); }
+
+/* ===== PRODUCTS ===== */
+async function loadProducts(){
+  try {
+    var r = await fetch(API+'/api/products');
+    var d = await r.json();
+    allProducts = d.products || [];
+  } catch(e){ allProducts = []; }
+  render();
+}
+
+function filtered(){
+  return allProducts.filter(p=>{
+    if(S.o !== 'all' && p.origin !== S.o) return false;
+    if(S.g !== 'all' && p.gender !== S.g) return false;
+    if(S.b !== 'الكل'){
+      var fams = ['زهري','خشبي','شرقي','عود','مسك','حمضي'];
+      if(fams.includes(S.b) && p.family !== S.b) return false;
+      if(!fams.includes(S.b) && p.brand !== S.b) return false;
+    }
+    return true;
+  });
+}
+
+function gp(g){ return g==='م'?'<span class="gp gm">رجالي</span>':g==='ن'?'<span class="gp gf">نسائي</span>':'<span class="gp gu">يونيسكس</span>'; }
+
+function render(){
+  var isPrivee = S.o === 'own';
+  var c = CFG[S.o];
+  // Hero
+  document.getElementById('heroEl').innerHTML =
+    '<div class="hero'+(isPrivee?' privee-hero':'')+'" style="'+(isPrivee?'background:linear-gradient(160deg,#0A0A0A 60%,#1A1408)':'')+'">'
+    +'<p class="h-eye">'+c.eye+'</p>'
+    +'<h1 class="h-ttl'+(isPrivee?' privee-ttl':'')+'">'+c.t+'</h1>'
+    +'<div class="h-ln'+(isPrivee?' gold':'')+'"></div>'
+    +'<p class="h-sub">'+c.sub+'</p>'
+    +'<button class="h-cta'+(isPrivee?' gold':'')+'" onclick="document.getElementById(\'prodGrid\').scrollIntoView({behavior:\'smooth\'})">اكتشف المجموعة</button>'
+    +'</div>';
+  // Price bar
+  document.getElementById('priceBarEl').innerHTML = isPrivee ? '' :
+    '<div class="price-bar"><div><div class="pb-info">السعر الموحد · ٥٠ مل</div><div class="pb-del">توصيل ٢ د.ك · مجاني فوق ١٥ د.ك</div></div><div class="pb-price">4.000 <small>د.ك</small></div></div>';
+  // Custom sec
+  document.getElementById('customSecEl').innerHTML = isPrivee ? '' : buildCustomSec();
+  // Row 3
+  document.getElementById('r3').innerHTML = c.b.map(b=>'<button class="t3'+(b===S.b?' on':'')+'" onclick="setB(this,\''+b+'\')">'+b+'</button>').join('');
+  // Products
+  var pr = filtered();
+  document.getElementById('cntLbl').textContent = pr.length+' عطر'+(isPrivee?'':' · ٤ د.ك');
+  if(!pr.length){
+    document.getElementById('prodGrid').innerHTML = '<div class="empty-sec">لا توجد عطور في هذا التصنيف</div>';
+    return;
+  }
+  document.getElementById('prodGrid').innerHTML =
+    '<div class="pgrid">'+pr.map(p=>{
+      var imgHtml = p.image_url
+        ? '<img src="'+p.image_url+'" alt="'+p.name+'" loading="lazy">'
+        : '<span class="pimg-placeholder">🌸</span>';
+      var price = p.is_privee ? (p.price||'—')+'.000' : '4.000';
+      return '<div class="pcard" onclick="showDetail(\''+p.id+'\')">'+
+        (p.is_privee?'<span class="ntag gold">Privée</span>':'')+
+        '<button class="wsh'+(wished.has(p.id)?' on':'')+'" onclick="event.stopPropagation();toggleWish(\''+p.id+'\',this)">♡</button>'+
+        '<div class="pimg">'+imgHtml+'</div>'+
+        '<p class="pbr'+(p.is_privee?' gold':'')+'">'+( p.is_privee?'Collection Privée':( p.brand||'—'))+'</p>'+
+        '<p class="pnm">'+p.name+'</p>'+
+        '<div class="pmeta">'+gp(p.gender||'ي')+'<span style="font-size:5.5px;color:var(--mist);letter-spacing:0.1em">'+( p.family||'')+'</span></div>'+
+        '<div class="pfoot"><div class="ppr">'+price+'<small> د.ك</small></div>'+
+        '<button class="abtn'+(p.is_privee?' gold':'')+'" onclick="event.stopPropagation();addCart(\''+p.id+'\')">+</button></div>'+
+        '</div>';
+    }).join('')+'</div>';
+}
+
+/* ===== TABS ===== */
+function setO(btn,v){ document.querySelectorAll('.t1').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); S.o=v; S.b='الكل'; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function setG(btn,v){ document.querySelectorAll('.t2').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); S.g=v; render(); }
+function setB(btn,v){ document.querySelectorAll('.t3').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); S.b=v; render(); }
+
+/* ===== CUSTOM REQUEST ===== */
+function buildCustomSec(){
+  return '<div class="custom-sec" id="customSec"><p class="sec-eye">✦ &nbsp;اطلب ما لا تجده في قائمتنا</p>'+
+    '<div class="custom-card"><div class="c-hdr"><span style="font-size:20px;color:var(--warm)">✨</span><div class="c-hdr-text"><h3>اطلب عطرك المخصص</h3><p>نصنعه لك · ٥٠ مل · نفس السعر الموحد</p></div></div>'+
+    '<div class="c-body"><p class="c-desc">تبي عطر من ماركة معينة مو موجود؟ اختر الماركة والنوع ونسويه لك.</p>'+
+    '<label class="f-lbl">الماركة</label>'+
+    '<select class="f-sel" id="selBrand" onchange="onBrandChange()">'+
+    '<option value="">— اختر الماركة —</option>'+
+    Object.keys(BRAND_TYPES).map(b=>'<option>'+b+'</option>').join('')+
+    '<option value="other">أخرى</option></select>'+
+    '<input class="f-inp" id="inpBrand" type="text" placeholder="اكتب اسم الماركة...">'+
+    '<label class="f-lbl">النوع / العطر</label>'+
+    '<select class="f-sel" id="selType" onchange="onTypeChange()"><option value="">— اختر النوع —</option></select>'+
+    '<input class="f-inp" id="inpType" type="text" placeholder="اكتب اسم العطر...">'+
+    '<label class="f-lbl">ملاحظة (اختياري)</label>'+
+    '<input class="f-inp show" id="inpNote" type="text" placeholder="أي تفاصيل إضافية..." style="border:0.5px solid var(--stone)">'+
+    '<div class="f-note" id="fNote">اختر الماركة والنوع وسنرسل لك تأكيد الطلب.</div>'+
+    '<button class="wa-btn" onclick="sendCustomWA()"><span style="font-size:18px">💬</span> أرسل عبر واتساب</button>'+
+    '<button class="send-btn" onclick="sendCustomApp()">أرسل داخل التطبيق ←</button>'+
+    '</div></div></div>';
+}
+
+function onBrandChange(){
+  var b = document.getElementById('selBrand').value;
+  document.getElementById('inpBrand').classList.toggle('show', b==='other');
+  var ts = document.getElementById('selType');
+  var types = b && b!=='other' && BRAND_TYPES[b] ? BRAND_TYPES[b] : [];
+  ts.innerHTML = '<option value="">— اختر النوع —</option>'+types.map(t=>'<option>'+t+'</option>').join('');
+  document.getElementById('inpType').classList.remove('show');
+  updateNote();
+}
+function onTypeChange(){
+  var v = document.getElementById('selType').value;
+  document.getElementById('inpType').classList.toggle('show', v==='أخرى');
+  updateNote();
+}
+function updateNote(){
+  var b = document.getElementById('selBrand').value;
+  var t = document.getElementById('selType').value;
+  if(b && t && t!=='أخرى') document.getElementById('fNote').textContent = 'طلبك: '+b+' · '+t+' · ٥٠ مل · ٤ د.ك + ٢ د.ك توصيل';
+}
+function buildMsg(){
+  var b = document.getElementById('selBrand').value==='other'?document.getElementById('inpBrand').value:document.getElementById('selBrand').value;
+  var t = document.getElementById('selType').value==='أخرى'?document.getElementById('inpType').value:document.getElementById('selType').value;
+  var n = document.getElementById('inpNote').value;
+  return 'طلب عطر مخصص:\nالماركة: '+(b||'—')+'\nالنوع: '+(t||'—')+'\nالحجم: 50 مل\nالسعر: 4 د.ك + 2 د.ك توصيل'+(n?'\nملاحظة: '+n:'');
+}
+function sendCustomWA(){ window.open('https://wa.me/96500000000?text='+encodeURIComponent(buildMsg()),'_blank'); }
+function sendCustomApp(){ showToast('✦ تم استلام طلبك — سنتواصل قريباً'); }
+function scrollToCustom(){ var el=document.getElementById('customSec'); if(el) el.scrollIntoView({behavior:'smooth'}); }
+
+/* ===== WISHLIST ===== */
+function toggleWish(id, btn){
+  if(wished.has(id)){ wished.delete(id); btn.classList.remove('on'); btn.textContent='♡'; showToast('أُزيل من المفضلة'); }
+  else { wished.add(id); btn.classList.add('on'); btn.textContent='♥'; showToast('أُضيف للمفضلة'); }
+  localStorage.setItem('parfums_wished', JSON.stringify([...wished]));
+}
+
+/* ===== CART ===== */
+function addCart(id){
+  var p = allProducts.find(x=>x.id===id);
+  if(!p) return;
+  cart.push({id:p.id, name:p.name, brand:p.brand||'', price:p.is_privee?(parseFloat(p.price)||0):4.000, image_url:p.image_url||null, is_privee:p.is_privee});
+  saveCart();
+  updateCartBadge();
+  showToast('أُضيف · '+p.name);
+}
+
+function updateCartBadge(){ document.getElementById('cartBdg').textContent = cart.length; }
+
+function saveCart(){ localStorage.setItem('parfums_cart', JSON.stringify(cart)); }
+
+function renderCart(){
+  var el = document.getElementById('cartContent');
+  if(!cart.length){
+    el.innerHTML = '<div class="cart-empty"><span class="empty-icon">🛍️</span>سلتك فارغة<br>أضف بعض العطور!</div>';
+    return;
+  }
+  var del = 2.000;
+  var subtotal = cart.reduce((s,i)=>s+i.price, 0);
+  var total = subtotal + del;
+  el.innerHTML =
+    '<select class="area-select" id="areaSelect" style="margin:14px;width:calc(100% - 28px)" onchange="updateDelivery(this.value)">'+
+    '<option value="normal">منطقة عادية — توصيل ٢ د.ك</option>'+
+    '<option value="far">منطقة بعيدة (صباح الأحمد...) — توصيل ٣ د.ك</option>'+
+    '</select>'+
+    cart.map((item,i)=>
+      '<div class="cart-item">'+
+      '<div class="cart-item-img">'+(item.image_url?'<img src="'+item.image_url+'" alt="'+item.name+'">':'🌸')+'</div>'+
+      '<div class="cart-item-info">'+
+      '<div class="cart-item-brand">'+item.brand+'</div>'+
+      '<div class="cart-item-name">'+item.name+'</div>'+
+      '<div class="cart-item-price">'+item.price.toFixed(3)+'<small> د.ك · ٥٠ مل</small></div>'+
+      '</div>'+
+      '<button class="cart-rm" onclick="removeCart('+i+')">🗑️</button>'+
+      '</div>'
+    ).join('')+
+    '<div class="cart-summary">'+
+    '<div class="sum-row"><span class="sum-lbl">المنتجات ('+cart.length+')</span><span class="sum-val">'+subtotal.toFixed(3)+' د.ك</span></div>'+
+    '<div class="sum-row"><span class="sum-lbl">التوصيل</span><span class="sum-val" id="delVal">'+del.toFixed(3)+' د.ك</span></div>'+
+    '<div class="sum-row sum-total"><span class="sum-lbl">الإجمالي</span><span class="sum-val" id="totalVal">'+total.toFixed(3)+' د.ك</span></div>'+
+    '</div>'+
+    '<div style="height:80px"></div>'+
+    '<div class="checkout-wrap"><button class="checkout-btn" onclick="checkout()">إتمام الطلب ← الدفع</button></div>';
+}
+
+function removeCart(i){ cart.splice(i,1); saveCart(); updateCartBadge(); renderCart(); }
+function updateDelivery(area){
+  var del = area==='far' ? 3.000 : 2.000;
+  var sub = cart.reduce((s,i)=>s+i.price, 0);
+  document.getElementById('delVal').textContent = del.toFixed(3)+' د.ك';
+  document.getElementById('totalVal').textContent = (sub+del).toFixed(3)+' د.ك';
+}
+function checkout(){
+  if(!TOKEN){ if(confirm('سجل دخول لإتمام الطلب')){ showPage('page-otp'); } return; }
+  showToast('الدفع عبر KNET — قريباً');
+}
+
+/* ===== DETAIL ===== */
+function showDetail(id){
+  var p = allProducts.find(x=>x.id===id);
+  if(!p) return;
+  prevPage = 'page-store';
+  var price = p.is_privee ? (p.price||'—').toString() : '4.000';
+  var gLabel = p.gender==='م'?'رجالي':p.gender==='ن'?'نسائي':'يونيسكس';
+  document.getElementById('detailContent').innerHTML =
+    '<div class="detail-img">'+(p.image_url?'<img src="'+p.image_url+'" alt="'+p.name+'">':'<span style="font-size:60px">🌸</span>')+'</div>'+
+    '<div class="detail-body">'+
+    '<div class="detail-brand">'+(p.brand||'')+(p.is_privee?' · Collection Privée':'')+'</div>'+
+    '<div class="detail-name">'+p.name+'</div>'+
+    '<div class="detail-meta">'+
+    '<span class="detail-tag">'+gLabel+'</span>'+
+    '<span class="detail-tag">'+(p.family||'')+'</span>'+
+    '<span class="detail-tag">'+(p.origin==='fr'?'فرنسية':p.origin==='ar'?'عربية':'Privée')+'</span>'+
+    '</div>'+
+    '<div class="detail-price">'+price+'<small> د.ك</small></div>'+
+    '<div class="detail-size">٥٠ مل · Eau de Parfum</div>'+
+    (p.description?'<div class="detail-desc">'+p.description+'</div>':'')+
+    '</div>'+
+    '<div class="detail-add">'+
+    '<button class="detail-wish'+(wished.has(p.id)?' on':'')+'" id="wishBtn" onclick="toggleWishDetail(\''+p.id+'\')">♡</button>'+
+    '<button class="detail-bag" onclick="addCart(\''+p.id+'\');showToast(\'أُضيف للسلة · '+p.name+'\')">أضف إلى السلة</button>'+
+    '</div>';
+  showPage('page-detail');
+}
+function toggleWishDetail(id){
+  var btn = document.getElementById('wishBtn');
+  toggleWish(id, btn);
+}
+function goBack(){ showPage(prevPage); }
+
+/* ===== NAVIGATION ===== */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='page-cart') renderCart();
+  window.scrollTo(0,0);
+}
+
+/* ===== TOAST ===== */
+function showToast(m){
+  var t=document.getElementById('toast');
+  t.textContent=m; t.classList.add('show');
+  clearTimeout(t._); t._=setTimeout(()=>t.classList.remove('show'),2200);
+}
+</script>
+</body>
+</html>
