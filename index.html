@@ -114,24 +114,32 @@ body{font-family:'Cairo','Tajawal',sans-serif;background:#DEDAD4;color:var(--ink
 .pb-price small{font-family:'Cairo',sans-serif;font-size:12px;color:var(--mist)}
 .pb-del{font-size:11px;color:var(--mist);letter-spacing:0.01em;margin-top:2px}
 
-/* CUSTOM REQUEST */
-.custom-sec{padding:14px 13px;background:var(--pearl);border-bottom:1px solid var(--stone)}
-.sec-eye{font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:var(--warm);margin-bottom:8px}
-.custom-card{background:var(--white);border:0.5px solid var(--stone);overflow:hidden}
-.c-hdr{background:var(--ink);padding:12px 14px;display:flex;align-items:center;gap:10px}
-.c-hdr-text h3{font-family:'EB Garamond',serif;font-size:15px;color:var(--white)}
-.c-hdr-text p{font-size:11px;color:rgba(200,184,154,0.5);margin-top:2px;letter-spacing:0.01em;text-transform:uppercase}
-.c-body{padding:13px}
-.c-desc{font-size:12px;color:var(--mist);line-height:1.9;margin-bottom:13px;letter-spacing:0.08em}
-.f-lbl{font-size:11px;letter-spacing:0.02em;color:var(--mist);text-transform:uppercase;margin-bottom:4px;display:block;margin-top:10px}
-.f-lbl:first-child{margin-top:0}
-.f-sel{width:100%;border:0.5px solid var(--stone);padding:10px 11px;font-family:'Cairo',sans-serif;font-size:12px;color:var(--ink);background:var(--white);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238C8278' stroke-width='1.2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 10px center}
-.f-inp{width:100%;border:0.5px solid var(--stone);padding:10px 11px;font-family:'Cairo',sans-serif;font-size:12px;color:var(--ink);background:var(--white);outline:none;display:none}
-.f-inp.show{display:block;border-top:none}
+/* CUSTOM REQUEST — زر في الرئيسية */
+.custom-cta-bar{margin:12px 14px;background:var(--pearl);border:0.5px solid var(--stone);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background 0.2s;border-right:3px solid var(--warm)}
+.custom-cta-bar:active{background:var(--stone)}
+.custom-cta-text{font-size:13px;color:var(--ink);font-weight:600}
+.custom-cta-sub{font-size:11px;color:var(--mist);margin-top:3px}
+.custom-cta-arrow{font-size:20px;color:var(--warm)}
+
+/* CUSTOM PAGE */
+.custom-page-header{padding:14px 16px;border-bottom:1px solid var(--stone);display:flex;align-items:center;gap:12px;background:var(--white);position:sticky;top:0;z-index:10}
+.custom-page-title{font-family:'EB Garamond',serif;font-size:20px}
+.custom-hero{background:var(--ink);padding:28px 20px 24px;text-align:center;position:relative;overflow:hidden}
+.custom-hero::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:220px;height:220px;border-radius:50%;border:0.5px solid rgba(200,184,154,0.1)}
+.custom-hero h2{font-family:'EB Garamond',serif;font-size:26px;color:var(--white);margin-bottom:6px;font-style:italic}
+.custom-hero p{font-size:12px;color:var(--mist);line-height:1.8}
+.custom-form-body{padding:20px 16px 120px}
+.cf-label{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;margin-top:16px}
+.cf-label:first-child{margin-top:0}
+.f-sel{width:100%;border:0.5px solid var(--stone);padding:11px 12px;font-family:'Cairo',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238C8278' stroke-width='1.2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center}
+.f-inp{width:100%;border:0.5px solid var(--stone);padding:11px 12px;font-family:'Cairo',sans-serif;font-size:14px;color:var(--ink);background:var(--white);outline:none;display:none}
+.f-inp.show{display:block;margin-top:6px}
 .f-inp:focus,.f-sel:focus{border-color:var(--ink)}
-.f-note{font-size:11px;color:var(--mist);line-height:1.8;margin:10px 0;padding:9px;background:var(--pearl);border:0.5px solid var(--stone);letter-spacing:0.08em}
-.wa-btn{width:100%;background:#25A560;color:var(--white);border:none;padding:12px;font-family:'Cairo',sans-serif;font-size:12px;letter-spacing:0.03em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px}
-.send-btn{width:100%;background:var(--ink);color:var(--white);border:none;padding:12px;font-family:'Cairo',sans-serif;font-size:12px;letter-spacing:0.03em;text-transform:uppercase;cursor:pointer}
+.f-note{font-size:12px;color:var(--mist);line-height:1.8;margin-top:16px;padding:12px;background:var(--pearl);border:0.5px solid var(--stone)}
+.custom-submit{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:390px;padding:14px 16px;background:var(--white);border-top:0.5px solid var(--stone);z-index:10}
+@media(max-width:599px){.custom-submit{width:100%}}
+.wa-btn{width:100%;background:#25A560;color:var(--white);border:none;padding:13px;font-family:'Cairo',sans-serif;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;font-weight:600}
+.send-btn{width:100%;background:var(--ink);color:var(--white);border:none;padding:12px;font-family:'Cairo',sans-serif;font-size:14px;cursor:pointer;font-weight:500}
 
 /* COUNT BAR */
 .cbar{display:flex;justify-content:space-between;align-items:center;padding:9px 15px;border-bottom:0.5px solid var(--stone);background:var(--white)}
@@ -316,7 +324,7 @@ body{font-family:'Cairo','Tajawal',sans-serif;background:#DEDAD4;color:var(--ink
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
       الرئيسية
     </button>
-    <button class="bb" onclick="scrollToCustom()">
+    <button class="bb" onclick="showPage('page-custom')" id="bbCustom">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       مخصص
     </button>
@@ -332,6 +340,49 @@ body{font-family:'Cairo','Tajawal',sans-serif;background:#DEDAD4;color:var(--ink
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       حسابي
     </button>
+  </div>
+</div>
+
+<!-- ===== CUSTOM REQUEST PAGE ===== -->
+<div class="page" id="page-custom">
+  <div class="custom-page-header">
+    <button class="back-btn" onclick="showPage('page-store')">←</button>
+    <div class="custom-page-title">اطلب عطرك المخصص</div>
+  </div>
+  <div class="custom-hero">
+    <h2>✨ Sur Mesure</h2>
+    <p>تبي عطر من ماركة معينة مو موجود في قائمتنا؟<br>اختر الماركة والنوع ونسويه لك بنفس السعر الموحد</p>
+  </div>
+  <div class="custom-form-body">
+    <label class="cf-label">الماركة *</label>
+    <select class="f-sel" id="selBrand" onchange="onBrandChange()">
+      <option value="">— اختر الماركة —</option>
+      <option>Chanel</option><option>Dior</option><option>Creed</option>
+      <option>Tom Ford</option><option>Guerlain</option><option>Hermès</option>
+      <option>Byredo</option><option>Le Labo</option><option>Mancera</option>
+      <option>Montale</option><option>Kilian</option><option>Initio</option>
+      <option>Nishane</option><option>Amouage</option><option>Arabian Oud</option>
+      <option>Ajmal</option><option>Rasasi</option><option>Lattafa</option>
+      <option value="other">أخرى</option>
+    </select>
+    <input class="f-inp" id="inpBrand" type="text" placeholder="اكتب اسم الماركة...">
+
+    <label class="cf-label">النوع / العطر *</label>
+    <select class="f-sel" id="selType" onchange="onTypeChange()">
+      <option value="">— اختر الماركة أولاً —</option>
+    </select>
+    <input class="f-inp" id="inpType" type="text" placeholder="اكتب اسم العطر...">
+
+    <label class="cf-label">ملاحظة إضافية (اختياري)</label>
+    <input class="f-inp show" id="inpNote" type="text" placeholder="أي تفاصيل عن التركيبة..." style="margin-top:0">
+
+    <div class="f-note" id="fNote">اختر الماركة والنوع وسنرسل لك تأكيد الطلب.</div>
+  </div>
+  <div class="custom-submit">
+    <button class="wa-btn" onclick="sendCustomWA()">
+      <span style="font-size:20px">💬</span> أرسل عبر واتساب
+    </button>
+    <button class="send-btn" onclick="sendCustomApp()">أرسل داخل التطبيق ←</button>
   </div>
 </div>
 
@@ -528,8 +579,12 @@ function render(){
   // Price bar
   document.getElementById('priceBarEl').innerHTML = isPrivee ? '' :
     '<div class="price-bar"><div><div class="pb-info">السعر الموحد · ٥٠ مل</div><div class="pb-del">توصيل ٢ د.ك · مجاني فوق ١٥ د.ك</div></div><div class="pb-price">4.000 <small>د.ك</small></div></div>';
-  // Custom sec
-  document.getElementById('customSecEl').innerHTML = isPrivee ? '' : buildCustomSec();
+  // Custom button
+  document.getElementById('customSecEl').innerHTML = isPrivee ? '' :
+    '<div class="custom-cta-bar" onclick="showPage(\'page-custom\')">'
+    +'<div><div class="custom-cta-text">✦ اطلب عطرك المخصص</div><div class="custom-cta-sub">ما لقيت اللي تبيه؟ نسويه لك · ٤ د.ك</div></div>'
+    +'<span class="custom-cta-arrow">←</span>'
+    +'</div>';
   // Row 3
   document.getElementById('r3').innerHTML = c.b.map(b=>'<button class="t3'+(b===S.b?' on':'')+'" onclick="setB(this,\''+b+'\')">'+b+'</button>').join('');
   // Products
@@ -564,27 +619,6 @@ function setG(btn,v){ document.querySelectorAll('.t2').forEach(b=>b.classList.re
 function setB(btn,v){ document.querySelectorAll('.t3').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); S.b=v; render(); }
 
 /* ===== CUSTOM REQUEST ===== */
-function buildCustomSec(){
-  return '<div class="custom-sec" id="customSec"><p class="sec-eye">✦ &nbsp;اطلب ما لا تجده في قائمتنا</p>'+
-    '<div class="custom-card"><div class="c-hdr"><span style="font-size:20px;color:var(--warm)">✨</span><div class="c-hdr-text"><h3>اطلب عطرك المخصص</h3><p>نصنعه لك · ٥٠ مل · نفس السعر الموحد</p></div></div>'+
-    '<div class="c-body"><p class="c-desc">تبي عطر من ماركة معينة مو موجود؟ اختر الماركة والنوع ونسويه لك.</p>'+
-    '<label class="f-lbl">الماركة</label>'+
-    '<select class="f-sel" id="selBrand" onchange="onBrandChange()">'+
-    '<option value="">— اختر الماركة —</option>'+
-    Object.keys(BRAND_TYPES).map(b=>'<option>'+b+'</option>').join('')+
-    '<option value="other">أخرى</option></select>'+
-    '<input class="f-inp" id="inpBrand" type="text" placeholder="اكتب اسم الماركة...">'+
-    '<label class="f-lbl">النوع / العطر</label>'+
-    '<select class="f-sel" id="selType" onchange="onTypeChange()"><option value="">— اختر النوع —</option></select>'+
-    '<input class="f-inp" id="inpType" type="text" placeholder="اكتب اسم العطر...">'+
-    '<label class="f-lbl">ملاحظة (اختياري)</label>'+
-    '<input class="f-inp show" id="inpNote" type="text" placeholder="أي تفاصيل إضافية..." style="border:0.5px solid var(--stone)">'+
-    '<div class="f-note" id="fNote">اختر الماركة والنوع وسنرسل لك تأكيد الطلب.</div>'+
-    '<button class="wa-btn" onclick="sendCustomWA()"><span style="font-size:18px">💬</span> أرسل عبر واتساب</button>'+
-    '<button class="send-btn" onclick="sendCustomApp()">أرسل داخل التطبيق ←</button>'+
-    '</div></div></div>';
-}
-
 function onBrandChange(){
   var b = document.getElementById('selBrand').value;
   document.getElementById('inpBrand').classList.toggle('show', b==='other');
@@ -612,7 +646,6 @@ function buildMsg(){
 }
 function sendCustomWA(){ window.open('https://wa.me/96500000000?text='+encodeURIComponent(buildMsg()),'_blank'); }
 function sendCustomApp(){ showToast('✦ تم استلام طلبك — سنتواصل قريباً'); }
-function scrollToCustom(){ var el=document.getElementById('customSec'); if(el) el.scrollIntoView({behavior:'smooth'}); }
 
 /* ===== WISHLIST ===== */
 function toggleWish(id, btn){
