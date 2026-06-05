@@ -665,11 +665,12 @@ var SL = {pending:'معلق',confirmed:'مؤكد',preparing:'قيد التحضي
 var ordersChartInst = null;
 var statusChartInst = null;
 
-window.addEventListener('DOMContentLoaded', function() {
+// تشغيل بعد تحميل الصفحة
+(function init() {
   var _el = document.getElementById('todayDate');
   if (_el) _el.textContent = new Date().toLocaleDateString('ar-KW', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
   if (TOKEN) showApp();
-});
+})();
 
 async function doLogin() {
   var pwd = document.getElementById('pwdInput').value;
