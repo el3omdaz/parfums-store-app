@@ -196,7 +196,35 @@ tbody tr:last-child td{border-bottom:none}
 .upload-progress{height:4px;background:#E2E8F0;border-radius:2px;margin-top:12px;display:none}
 .upload-progress-bar{height:100%;background:linear-gradient(90deg,#6366F1,#8B5CF6);border-radius:2px;width:0%;transition:width 0.3s}
 
-/* CANCEL / SAVE BTNS */
+/* ORIGIN BUTTONS */
+.origin-btn{flex:1;padding:10px 8px;border:1.5px solid #E2E8F0;background:#F8FAFC;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;color:#64748B;transition:all 0.2s;font-weight:500}
+.origin-btn:hover{border-color:#6366F1;color:#6366F1}
+.origin-btn.on{border-color:#6366F1;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff}
+.origin-btn.privee-btn{background:linear-gradient(135deg,#1A1714,#2A2218)}
+.origin-btn.privee-btn.on{border-color:#C8B89A;color:#C8B89A}
+
+/* ADD NAME BUTTON */
+.add-name-btn{background:none;border:none;color:#6366F1;font-size:12px;cursor:pointer;font-family:'Tajawal',sans-serif;padding:4px 0;text-decoration:underline;margin-top:4px}
+
+/* TAG CHECKBOXES */
+.tag-check{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #E2E8F0;border-radius:8px;cursor:pointer;font-size:13px;transition:all 0.2s}
+.tag-check:hover{border-color:#6366F1;background:#F8F9FF}
+.tag-check input{accent-color:#6366F1}
+
+/* PREVIEW CARD */
+.prev-card{background:#FAFAF8;border-bottom:1px solid #E8E4DD;overflow:hidden}
+.prev-img{height:180px;background:#F4F1EC;display:flex;align-items:center;justify-content:center;font-size:50px;overflow:hidden;position:relative}
+.prev-img img{width:100%;height:100%;object-fit:cover}
+.prev-body{padding:12px}
+.prev-tag{position:absolute;top:8px;left:8px;background:#0A0A0A;color:#fff;font-size:9px;padding:2px 6px;letter-spacing:0.15em}
+.prev-brand{font-size:9px;letter-spacing:0.2em;color:#8C8278;text-transform:uppercase;margin-bottom:3px}
+.prev-name{font-family:'EB Garamond',serif;font-size:16px;color:#0A0A0A;margin-bottom:4px}
+.prev-meta{display:flex;gap:4px;margin-bottom:8px}
+.prev-gender,.prev-family{font-size:9px;padding:2px 6px;background:#F0ECE6;color:#8C8278}
+.prev-footer{display:flex;justify-content:space-between;align-items:center;border-top:0.5px solid #E8E4DD;padding-top:8px}
+.prev-price{font-family:'EB Garamond',serif;font-size:17px;color:#0A0A0A}
+.prev-price small{font-size:10px;color:#8C8278}
+.prev-add{width:28px;height:28px;background:#0A0A0A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:default}
 .btn-cancel{background:#F1F5F9;color:#64748B;border:none;padding:11px 24px;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;font-family:'Tajawal',sans-serif;transition:all 0.2s}
 .btn-cancel:hover{background:#E2E8F0}
 .btn-save{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;border:none;padding:11px 28px;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;font-family:'Tajawal',sans-serif;transition:opacity 0.2s}
@@ -448,11 +476,11 @@ tbody tr:last-child td{border-bottom:none}
         </div>
       </div>
       <div class="setting-card">
-        <div class="setting-title">📦 حجم العطر الموحد</div>
+        <div class="setting-title">💾 النسخ الاحتياطي</div>
         <div class="setting-group">
-          <label class="setting-label">الحجم الافتراضي (مل)</label>
-          <input class="setting-input" id="default_size" type="number" value="50">
-          <button class="setting-save" onclick="saveCfg('default_size')">حفظ التغييرات</button>
+          <label class="setting-label">تصدير نسخة احتياطية كاملة</label>
+          <p style="font-size:12px;color:#94A3B8;margin-bottom:12px">يصدر ملف JSON فيه كل المنتجات، الماركات، الطلبات، والإعدادات</p>
+          <button class="setting-save" onclick="downloadBackup()" style="background:linear-gradient(135deg,#10B981,#34D399)">⬇️ تنزيل النسخة الاحتياطية</button>
         </div>
       </div>
     </div>
@@ -462,88 +490,166 @@ tbody tr:last-child td{border-bottom:none}
 
 <!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="productModal">
-  <div class="modal">
+  <div class="modal" style="max-width:900px;width:95vw">
     <div class="modal-header">
       <div class="modal-title" id="modalTitle">إضافة منتج جديد</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <input type="hidden" id="editProductId">
+    <div class="modal-body" style="display:grid;grid-template-columns:1fr 340px;gap:24px;padding:24px">
 
-      <!-- صورة المنتج -->
-      <div style="margin-bottom:20px">
-        <div class="f-label" style="margin-bottom:8px">صورة المنتج</div>
-        <div class="img-upload-area" id="uploadArea">
-          <input type="file" id="imageFile" accept="image/jpeg,image/png,image/webp" onchange="onImageSelect(this)">
-          <div class="img-upload-icon">🖼️</div>
-          <div class="img-upload-text">اسحب الصورة هنا أو اضغط للاختيار</div>
-          <div class="img-upload-sub">JPG, PNG, WebP — حتى 5 ميجابايت</div>
-          <img class="img-preview" id="imgPreview">
+      <!-- الجانب الأيسر: الفورم -->
+      <div>
+        <input type="hidden" id="editProductId">
+
+        <!-- صورة المنتج -->
+        <div style="margin-bottom:20px">
+          <div class="f-label" style="margin-bottom:8px">صورة المنتج</div>
+          <div class="img-upload-area" id="uploadArea">
+            <input type="file" id="imageFile" accept="image/jpeg,image/png,image/webp" onchange="onImageSelect(this)">
+            <div id="uploadPlaceholder">
+              <div class="img-upload-icon">🖼️</div>
+              <div class="img-upload-text">اسحب الصورة هنا أو اضغط للاختيار</div>
+              <div class="img-upload-sub">JPG, PNG, WebP — حتى 5 ميجابايت</div>
+            </div>
+            <img class="img-preview" id="imgPreview">
+          </div>
+          <div class="upload-progress" id="uploadProgress">
+            <div class="upload-progress-bar" id="uploadBar"></div>
+          </div>
+          <input type="hidden" id="imageUrl">
         </div>
-        <div class="upload-progress" id="uploadProgress">
-          <div class="upload-progress-bar" id="uploadBar"></div>
+
+        <!-- الأصل أول شيء -->
+        <div class="form-row">
+          <div class="form-col full">
+            <label class="f-label">الأصل *</label>
+            <div style="display:flex;gap:10px">
+              <button class="origin-btn on" onclick="selectOrigin('fr',this)" id="obtn-fr">🇫🇷 فرنسية</button>
+              <button class="origin-btn" onclick="selectOrigin('ar',this)" id="obtn-ar">🌙 عربية</button>
+              <button class="origin-btn privee-btn" onclick="selectOrigin('own',this)" id="obtn-own">✦ Collection Privée</button>
+            </div>
+          </div>
         </div>
-        <input type="hidden" id="imageUrl">
+
+        <!-- الماركة واسم العطر من قوائم -->
+        <div class="form-row" id="brandRow">
+          <div class="form-col">
+            <label class="f-label">الماركة *</label>
+            <select class="f-select" id="pBrandSel" onchange="onBrandSelChange()">
+              <option value="">— اختر الماركة —</option>
+            </select>
+            <input class="f-input" id="pBrandNew" type="text" placeholder="اسم الماركة الجديدة..." style="margin-top:6px;display:none">
+            <button class="add-name-btn" id="addBrandBtn" onclick="toggleNewBrand()" style="display:none">+ إضافة ماركة جديدة</button>
+          </div>
+          <div class="form-col">
+            <label class="f-label">اسم العطر *</label>
+            <select class="f-select" id="pNameSel" onchange="onNameSelChange()">
+              <option value="">— اختر الماركة أولاً —</option>
+            </select>
+            <input class="f-input" id="pNameNew" type="text" placeholder="اسم العطر الجديد..." style="margin-top:6px;display:none">
+            <button class="add-name-btn" id="addNameBtn" onclick="toggleNewName()" style="display:none">+ إضافة اسم جديد</button>
+          </div>
+        </div>
+
+        <!-- حقل الاسم لـ Collection Privée -->
+        <div class="form-row" id="priveeNameRow" style="display:none">
+          <div class="form-col full">
+            <label class="f-label">اسم العطر الخاص *</label>
+            <input class="f-input" id="pPriveeName" type="text" placeholder="اكتب اسماً مميزاً لتركيبتك...">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col">
+            <label class="f-label">الجنس</label>
+            <select class="f-select" id="pGender" onchange="updatePreview()">
+              <option value="ي">يونيسكس</option>
+              <option value="م">رجالي</option>
+              <option value="ن">نسائي</option>
+            </select>
+          </div>
+          <div class="form-col">
+            <label class="f-label">العائلة الشمية</label>
+            <select class="f-select" id="pFamily" onchange="updatePreview()">
+              <option value="زهري">زهري</option>
+              <option value="خشبي">خشبي</option>
+              <option value="شرقي">شرقي</option>
+              <option value="عود">عود</option>
+              <option value="مسك">مسك</option>
+              <option value="حمضي">حمضي</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row" id="priceRow" style="display:none">
+          <div class="form-col full">
+            <label class="f-label">السعر (KD) — Collection Privée</label>
+            <input class="f-input" id="pPrice" type="number" step="0.001" placeholder="0.000" oninput="updatePreview()">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-col full">
+            <label class="f-label">وصف العطر (اختياري)</label>
+            <input class="f-input" id="pDesc" type="text" placeholder="وصف مختصر للعطر..." oninput="updatePreview()">
+          </div>
+        </div>
+
+        <!-- وسوم -->
+        <div class="form-row">
+          <div class="form-col full">
+            <label class="f-label">وسوم</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <label class="tag-check"><input type="checkbox" id="tagNew"> جديد</label>
+              <label class="tag-check"><input type="checkbox" id="tagBest"> الأكثر مبيعاً</label>
+              <label class="tag-check"><input type="checkbox" id="tagLimited"> طبعة محدودة</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="f-toggle" style="margin-top:12px">
+          <input type="checkbox" id="pActive" checked onchange="updatePreview()">
+          <label for="pActive">منتج نشط وظاهر في المتجر</label>
+        </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-col">
-          <label class="f-label">اسم العطر *</label>
-          <input class="f-input" id="pName" type="text" placeholder="مثال: N°5">
+      <!-- الجانب الأيمن: Preview -->
+      <div>
+        <div class="f-label" style="margin-bottom:12px">معاينة الكرت في المتجر</div>
+        <div style="background:#E8E4DD;padding:1px;border-radius:4px">
+          <div class="prev-card" id="previewCard">
+            <div class="prev-img" id="prevImg">
+              <span>🌸</span>
+            </div>
+            <div class="prev-body">
+              <div class="prev-tag" id="prevNewTag" style="display:none">New</div>
+              <div class="prev-brand" id="prevBrand">الماركة</div>
+              <div class="prev-name" id="prevName">اسم العطر</div>
+              <div class="prev-meta">
+                <span class="prev-gender" id="prevGender">يونيسكس</span>
+                <span class="prev-family" id="prevFamily">زهري</span>
+              </div>
+              <div class="prev-footer">
+                <div class="prev-price" id="prevPrice">4.000 <small>KD</small></div>
+                <div class="prev-add">+</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="form-col">
-          <label class="f-label">الماركة</label>
-          <input class="f-input" id="pBrand" type="text" placeholder="مثال: Chanel">
-        </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-col">
-          <label class="f-label">الأصل</label>
-          <select class="f-select" id="pOrigin" onchange="onOriginChange()">
-            <option value="fr">🇫🇷 فرنسية</option>
-            <option value="ar">🌙 عربية</option>
-            <option value="own">✦ Collection Privée</option>
+        <!-- نسخ منتج -->
+        <div style="margin-top:16px">
+          <div class="f-label" style="margin-bottom:8px">نسخ من منتج موجود</div>
+          <select class="f-select" id="copyFromSel" onchange="copyFromProduct(this.value)">
+            <option value="">— اختر منتجاً للنسخ —</option>
           </select>
         </div>
-        <div class="form-col">
-          <label class="f-label">الجنس</label>
-          <select class="f-select" id="pGender">
-            <option value="م">رجالي</option>
-            <option value="ن">نسائي</option>
-            <option value="ي">يونيسكس</option>
-          </select>
-        </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-col">
-          <label class="f-label">العائلة الشمية</label>
-          <select class="f-select" id="pFamily">
-            <option value="زهري">زهري</option>
-            <option value="خشبي">خشبي</option>
-            <option value="شرقي">شرقي</option>
-            <option value="عود">عود</option>
-            <option value="مسك">مسك</option>
-            <option value="حمضي">حمضي</option>
-          </select>
+        <!-- ملاحظة داخلية -->
+        <div style="margin-top:16px">
+          <div class="f-label" style="margin-bottom:8px">ملاحظة داخلية (لك فقط)</div>
+          <textarea class="f-input" id="pInternalNote" style="height:80px;resize:vertical;font-family:'Tajawal',sans-serif" placeholder="ملاحظات تخصك أنت..."></textarea>
         </div>
-        <div class="form-col price-field" id="priceField">
-          <label class="f-label">السعر (KD) — للـ Privée فقط</label>
-          <input class="f-input" id="pPrice" type="number" step="0.001" placeholder="0.000">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-col full">
-          <label class="f-label">وصف العطر (اختياري)</label>
-          <input class="f-input" id="pDesc" type="text" placeholder="وصف مختصر للعطر...">
-        </div>
-      </div>
-
-      <div class="f-toggle">
-        <input type="checkbox" id="pActive" checked>
-        <label for="pActive">منتج نشط وظاهر في المتجر</label>
       </div>
     </div>
     <div class="modal-footer">
@@ -751,17 +857,44 @@ function renderProducts(products) {
   }).join('');
 }
 
-// ===== MODAL =====
-function openModal(productId) {
+// ===== MODAL VARS =====
+var currentOrigin = 'fr';
+var allBrands = [];
+var currentBrandId = null;
+var isAddingNewBrand = false;
+var isAddingNewName = false;
+
+async function openModal(productId) {
   resetModal();
+  // جلب الماركات
+  await loadBrandsForModal('fr');
+  // جلب كل المنتجات للنسخ
+  var copyEl = document.getElementById('copyFromSel');
+  copyEl.innerHTML = '<option value="">— اختر منتجاً للنسخ —</option>' +
+    allProducts.map(function(p){ return '<option value="'+p.id+'">'+p.brand+' — '+p.name+'</option>'; }).join('');
+
   if (productId) {
     var p = allProducts.find(function(x){ return x.id === productId; });
     if (!p) return;
     document.getElementById('modalTitle').textContent = 'تعديل المنتج';
     document.getElementById('editProductId').value = p.id;
-    document.getElementById('pName').value = p.name || '';
-    document.getElementById('pBrand').value = p.brand || '';
-    document.getElementById('pOrigin').value = p.origin || 'fr';
+    // الأصل
+    selectOrigin(p.origin || 'fr', document.getElementById('obtn-'+(p.origin||'fr')));
+    await loadBrandsForModal(p.origin || 'fr');
+    // الماركة
+    var brandSel = document.getElementById('pBrandSel');
+    for(var i=0;i<brandSel.options.length;i++){
+      if(brandSel.options[i].text === p.brand){ brandSel.value = brandSel.options[i].value; break; }
+    }
+    if(brandSel.value) {
+      currentBrandId = brandSel.value;
+      await loadNamesForModal(currentBrandId);
+      var nameSel = document.getElementById('pNameSel');
+      for(var j=0;j<nameSel.options.length;j++){
+        if(nameSel.options[j].text === p.name){ nameSel.value = nameSel.options[j].value; break; }
+      }
+    }
+    document.getElementById('pPriveeName').value = p.origin==='own' ? p.name : '';
     document.getElementById('pGender').value = p.gender || 'ي';
     document.getElementById('pFamily').value = p.family || 'زهري';
     document.getElementById('pPrice').value = p.price || '';
@@ -772,8 +905,10 @@ function openModal(productId) {
       var prev = document.getElementById('imgPreview');
       prev.src = p.image_url;
       prev.style.display = 'block';
+      document.getElementById('uploadPlaceholder').style.display = 'none';
+      document.getElementById('prevImg').innerHTML = '<img src="'+p.image_url+'">';
     }
-    onOriginChange();
+    updatePreview();
   }
   document.getElementById('productModal').classList.add('show');
 }
@@ -784,11 +919,12 @@ function closeModal() {
 }
 
 function resetModal() {
+  currentOrigin = 'fr';
+  currentBrandId = null;
+  isAddingNewBrand = false;
+  isAddingNewName = false;
   document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
   document.getElementById('editProductId').value = '';
-  document.getElementById('pName').value = '';
-  document.getElementById('pBrand').value = '';
-  document.getElementById('pOrigin').value = 'fr';
   document.getElementById('pGender').value = 'ي';
   document.getElementById('pFamily').value = 'زهري';
   document.getElementById('pPrice').value = '';
@@ -798,17 +934,150 @@ function resetModal() {
   document.getElementById('imageFile').value = '';
   document.getElementById('imgPreview').style.display = 'none';
   document.getElementById('imgPreview').src = '';
+  document.getElementById('uploadPlaceholder').style.display = 'block';
   document.getElementById('uploadProgress').style.display = 'none';
   document.getElementById('uploadBar').style.width = '0%';
-  document.getElementById('priceField').classList.remove('show');
+  document.getElementById('pPriveeName').value = '';
+  document.getElementById('pInternalNote').value = '';
+  document.getElementById('pBrandNew').style.display = 'none';
+  document.getElementById('pNameNew').style.display = 'none';
+  document.getElementById('tagNew').checked = false;
+  document.getElementById('tagBest').checked = false;
+  document.getElementById('tagLimited').checked = false;
   document.getElementById('saveBtn').disabled = false;
+  document.getElementById('saveBtn').textContent = '💾 حفظ المنتج';
+  // Reset origin buttons
+  document.querySelectorAll('.origin-btn').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('obtn-fr').classList.add('on');
+  document.getElementById('brandRow').style.display = 'grid';
+  document.getElementById('priveeNameRow').style.display = 'none';
+  document.getElementById('priceRow').style.display = 'none';
+  // Reset preview
+  document.getElementById('prevBrand').textContent = 'الماركة';
+  document.getElementById('prevName').textContent = 'اسم العطر';
+  document.getElementById('prevPrice').innerHTML = '4.000 <small>KD</small>';
+  document.getElementById('prevImg').innerHTML = '<span>🌸</span>';
+  document.getElementById('prevNewTag').style.display = 'none';
 }
 
-function onOriginChange() {
-  var val = document.getElementById('pOrigin').value;
-  var pf = document.getElementById('priceField');
-  if (val === 'own') pf.classList.add('show');
-  else pf.classList.remove('show');
+function selectOrigin(origin, btn) {
+  currentOrigin = origin;
+  document.querySelectorAll('.origin-btn').forEach(function(b){b.classList.remove('on');});
+  if(btn) btn.classList.add('on');
+  var isPrivee = origin === 'own';
+  document.getElementById('brandRow').style.display = isPrivee ? 'none' : 'grid';
+  document.getElementById('priveeNameRow').style.display = isPrivee ? 'grid' : 'none';
+  document.getElementById('priceRow').style.display = isPrivee ? 'grid' : 'none';
+  if (!isPrivee) loadBrandsForModal(origin);
+  updatePreview();
+}
+
+async function loadBrandsForModal(origin) {
+  var r = await fetch('/api/brands?origin='+origin);
+  var d = await r.json();
+  allBrands = d.brands || [];
+  var sel = document.getElementById('pBrandSel');
+  sel.innerHTML = '<option value="">— اختر الماركة —</option>' +
+    allBrands.map(function(b){ return '<option value="'+b.id+'">'+b.name+'</option>'; }).join('') +
+    '<option value="__new__">+ إضافة ماركة جديدة</option>';
+  document.getElementById('pNameSel').innerHTML = '<option value="">— اختر الماركة أولاً —</option>';
+  document.getElementById('addBrandBtn').style.display = 'none';
+}
+
+async function onBrandSelChange() {
+  var sel = document.getElementById('pBrandSel');
+  var val = sel.value;
+  if (val === '__new__') {
+    document.getElementById('pBrandNew').style.display = 'block';
+    document.getElementById('pBrandNew').focus();
+    currentBrandId = null;
+    document.getElementById('pNameSel').innerHTML = '<option value="">— اكتب اسم الماركة أولاً —</option>';
+  } else {
+    document.getElementById('pBrandNew').style.display = 'none';
+    currentBrandId = val;
+    if (val) await loadNamesForModal(val);
+    else document.getElementById('pNameSel').innerHTML = '<option value="">— اختر الماركة أولاً —</option>';
+  }
+  updatePreview();
+}
+
+async function loadNamesForModal(brandId) {
+  var r = await fetch('/api/brands/'+brandId+'/perfumes');
+  var d = await r.json();
+  var names = d.perfumes || [];
+  var sel = document.getElementById('pNameSel');
+  sel.innerHTML = '<option value="">— اختر اسم العطر —</option>' +
+    names.map(function(n){ return '<option value="'+n.id+'" data-gender="'+n.gender+'" data-family="'+n.family+'">'+n.name+'</option>'; }).join('') +
+    '<option value="__new__">+ إضافة اسم جديد</option>';
+}
+
+function onNameSelChange() {
+  var sel = document.getElementById('pNameSel');
+  var val = sel.value;
+  if (val === '__new__') {
+    document.getElementById('pNameNew').style.display = 'block';
+    document.getElementById('pNameNew').focus();
+  } else {
+    document.getElementById('pNameNew').style.display = 'none';
+    if (val) {
+      var opt = sel.options[sel.selectedIndex];
+      var g = opt.getAttribute('data-gender');
+      var f = opt.getAttribute('data-family');
+      if (g) document.getElementById('pGender').value = g;
+      if (f) document.getElementById('pFamily').value = f;
+    }
+  }
+  updatePreview();
+}
+
+function toggleNewBrand() {
+  var inp = document.getElementById('pBrandNew');
+  inp.style.display = inp.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleNewName() {
+  var inp = document.getElementById('pNameNew');
+  inp.style.display = inp.style.display === 'none' ? 'block' : 'none';
+}
+
+function updatePreview() {
+  var isPrivee = currentOrigin === 'own';
+  var brandSel = document.getElementById('pBrandSel');
+  var nameSel = document.getElementById('pNameSel');
+  var brandName = isPrivee ? 'Collection Privée' :
+    (brandSel.value === '__new__' ? document.getElementById('pBrandNew').value :
+    (brandSel.options[brandSel.selectedIndex] ? brandSel.options[brandSel.selectedIndex].text : 'الماركة'));
+  var perfumeName = isPrivee ? document.getElementById('pPriveeName').value :
+    (nameSel.value === '__new__' ? document.getElementById('pNameNew').value :
+    (nameSel.options[nameSel.selectedIndex] ? nameSel.options[nameSel.selectedIndex].text : 'اسم العطر'));
+  var price = isPrivee ? (document.getElementById('pPrice').value || '—') : '4.000';
+  var gMap = {'م':'رجالي','ن':'نسائي','ي':'يونيسكس'};
+  var gender = gMap[document.getElementById('pGender').value] || 'يونيسكس';
+  var family = document.getElementById('pFamily').value || 'زهري';
+  var isNew = document.getElementById('tagNew').checked;
+  var imgUrl = document.getElementById('imageUrl').value;
+
+  document.getElementById('prevBrand').textContent = brandName || 'الماركة';
+  document.getElementById('prevName').textContent = perfumeName || 'اسم العطر';
+  document.getElementById('prevPrice').innerHTML = price + ' <small>KD</small>';
+  document.getElementById('prevGender').textContent = gender;
+  document.getElementById('prevFamily').textContent = family;
+  document.getElementById('prevNewTag').style.display = isNew ? 'block' : 'none';
+  if (imgUrl) document.getElementById('prevImg').innerHTML = '<img src="'+imgUrl+'">';
+  else document.getElementById('prevImg').innerHTML = '<span>🌸</span>';
+}
+
+function copyFromProduct(id) {
+  if (!id) return;
+  var p = allProducts.find(function(x){ return x.id === id; });
+  if (!p) return;
+  selectOrigin(p.origin || 'fr', document.getElementById('obtn-'+(p.origin||'fr')));
+  document.getElementById('pGender').value = p.gender || 'ي';
+  document.getElementById('pFamily').value = p.family || 'زهري';
+  document.getElementById('pDesc').value = p.description || '';
+  document.getElementById('pPrice').value = p.price || '';
+  updatePreview();
+  showToast('تم نسخ بيانات المنتج — عدّل ما تريد وحفظ');
 }
 
 async function onImageSelect(input) {
@@ -817,6 +1086,7 @@ async function onImageSelect(input) {
   var prev = document.getElementById('imgPreview');
   prev.src = URL.createObjectURL(file);
   prev.style.display = 'block';
+  document.getElementById('uploadPlaceholder').style.display = 'none';
   var prog = document.getElementById('uploadProgress');
   var bar = document.getElementById('uploadBar');
   prog.style.display = 'block';
@@ -826,18 +1096,17 @@ async function onImageSelect(input) {
     formData.append('image', file);
     bar.style.width = '60%';
     var r = await fetch('/api/upload/product-image', {
-      method: 'POST',
-      headers: { 'x-admin-token': TOKEN },
-      body: formData
+      method: 'POST', headers: {'x-admin-token': TOKEN}, body: formData
     });
     bar.style.width = '90%';
     var d = await r.json();
     if (d.url) {
       document.getElementById('imageUrl').value = d.url;
+      document.getElementById('prevImg').innerHTML = '<img src="'+d.url+'">';
       bar.style.width = '100%';
       setTimeout(function(){ prog.style.display = 'none'; }, 600);
     } else {
-      alert('فشل رفع الصورة: ' + (d.error || 'خطأ غير معروف'));
+      alert('فشل رفع الصورة: ' + (d.error || 'خطأ'));
       prog.style.display = 'none';
     }
   } catch(e) {
@@ -847,33 +1116,82 @@ async function onImageSelect(input) {
 }
 
 async function saveProduct() {
-  var name = document.getElementById('pName').value.trim();
-  if (!name) { alert('اسم العطر مطلوب'); return; }
+  var isPrivee = currentOrigin === 'own';
+  var brandSel = document.getElementById('pBrandSel');
+  var nameSel = document.getElementById('pNameSel');
+
+  // تحديد اسم الماركة والعطر
+  var brandName = '';
+  var perfumeName = '';
+  var newBrandId = currentBrandId;
+
+  if (isPrivee) {
+    brandName = 'Collection Privée';
+    perfumeName = document.getElementById('pPriveeName').value.trim();
+    if (!perfumeName) { alert('اسم العطر مطلوب'); return; }
+  } else {
+    // الماركة
+    if (brandSel.value === '__new__' || !brandSel.value) {
+      var newBrandName = document.getElementById('pBrandNew').value.trim();
+      if (!newBrandName) { alert('اختر أو اكتب اسم الماركة'); return; }
+      // احفظ الماركة الجديدة
+      var br = await api('/api/brands', {method:'POST', body:JSON.stringify({name:newBrandName, origin:currentOrigin})});
+      if (!br.brand) { alert('فشل حفظ الماركة'); return; }
+      newBrandId = br.brand.id;
+      brandName = newBrandName;
+    } else {
+      newBrandId = brandSel.value;
+      brandName = brandSel.options[brandSel.selectedIndex].text;
+    }
+    // اسم العطر
+    if (nameSel.value === '__new__' || !nameSel.value) {
+      var newPerfumeName = document.getElementById('pNameNew').value.trim();
+      if (!newPerfumeName) { alert('اختر أو اكتب اسم العطر'); return; }
+      // احفظ الاسم الجديد
+      await api('/api/brands/'+newBrandId+'/perfumes', {method:'POST', body:JSON.stringify({
+        name: newPerfumeName,
+        gender: document.getElementById('pGender').value,
+        family: document.getElementById('pFamily').value
+      })});
+      perfumeName = newPerfumeName;
+    } else {
+      perfumeName = nameSel.options[nameSel.selectedIndex].text;
+    }
+  }
+
   var saveBtn = document.getElementById('saveBtn');
   saveBtn.disabled = true;
   saveBtn.textContent = '⏳ جاري الحفظ...';
-  var origin = document.getElementById('pOrigin').value;
+
+  var tags = [];
+  if(document.getElementById('tagNew').checked) tags.push('new');
+  if(document.getElementById('tagBest').checked) tags.push('best');
+  if(document.getElementById('tagLimited').checked) tags.push('limited');
+
   var data = {
-    name: name,
-    brand: document.getElementById('pBrand').value.trim(),
-    origin: origin,
+    name: perfumeName,
+    brand: brandName,
+    origin: currentOrigin,
     gender: document.getElementById('pGender').value,
     family: document.getElementById('pFamily').value,
     description: document.getElementById('pDesc').value.trim(),
     is_active: document.getElementById('pActive').checked,
-    is_privee: origin === 'own',
+    is_privee: isPrivee,
     image_url: document.getElementById('imageUrl').value || null,
-    price: origin === 'own' ? parseFloat(document.getElementById('pPrice').value) || null : null
+    price: isPrivee ? parseFloat(document.getElementById('pPrice').value) || null : null,
+    tags: tags
   };
+
   try {
     var editId = document.getElementById('editProductId').value;
     var url = editId ? '/admin/api/products/'+editId : '/admin/api/products';
     var method = editId ? 'PATCH' : 'POST';
-    var r = await api(url, { method: method, body: JSON.stringify(data) });
+    var r = await api(url, {method:method, body:JSON.stringify(data)});
     if (r.product) {
       closeModal();
       await loadProducts();
       filterProducts(currentFilter);
+      showToast('✅ تم حفظ المنتج بنجاح');
     } else {
       alert('فشل الحفظ: ' + (r.error || 'خطأ'));
     }
@@ -883,6 +1201,8 @@ async function saveProduct() {
   saveBtn.disabled = false;
   saveBtn.textContent = '💾 حفظ المنتج';
 }
+
+function onOriginChange() {} // kept for compatibility
 
 async function loadCustom() {
   var d = await api('/admin/api/custom-requests');
@@ -913,7 +1233,22 @@ async function toggleProduct(id, active) {
   loadProducts();
 }
 
-async function saveCfg(key) {
+async function downloadBackup() {
+  try {
+    showToast('⏳ جاري تحضير النسخة الاحتياطية...');
+    var r = await fetch('/api/brands/backup/export', { headers: {'x-admin-token': TOKEN} });
+    var blob = await r.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'parfums-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ تم تنزيل النسخة الاحتياطية');
+  } catch(e) {
+    alert('فشل تنزيل النسخة الاحتياطية');
+  }
+}
   var value = document.getElementById(key).value;
   await api('/admin/api/config/'+key, {method:'PATCH',body:JSON.stringify({value:value})});
   alert('✅ تم الحفظ بنجاح!');
