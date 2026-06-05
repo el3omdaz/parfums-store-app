@@ -665,10 +665,11 @@ var SL = {pending:'معلق',confirmed:'مؤكد',preparing:'قيد التحضي
 var ordersChartInst = null;
 var statusChartInst = null;
 
-// DATE
-document.getElementById('todayDate').textContent = new Date().toLocaleDateString('ar-KW', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-if(TOKEN) showApp();
+window.addEventListener('DOMContentLoaded', function() {
+  var _el = document.getElementById('todayDate');
+  if (_el) _el.textContent = new Date().toLocaleDateString('ar-KW', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  if (TOKEN) showApp();
+});
 
 async function doLogin() {
   var pwd = document.getElementById('pwdInput').value;
