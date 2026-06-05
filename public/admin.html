@@ -1250,6 +1250,7 @@ async function downloadBackup() {
     alert('فشل تنزيل النسخة الاحتياطية');
   }
 }
+async function saveCfg(key) {
   var value = document.getElementById(key).value;
   await api('/admin/api/config/'+key, {method:'PATCH',body:JSON.stringify({value:value})});
   alert('✅ تم الحفظ بنجاح!');
