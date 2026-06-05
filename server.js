@@ -9,6 +9,7 @@ const ordersRoutes = require('./routes/orders');
 const productsRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
+const brandsRoutes = require('./routes/brands');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +37,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/brands', brandsRoutes);
 
 app.get('/', (req, res) => res.json({ status: 'Parfums Store API running ✅' }));
 
