@@ -1199,6 +1199,7 @@ async function saveProduct() {
     var url = editId ? '/admin/api/products/'+editId : '/admin/api/products';
     var method = editId ? 'PATCH' : 'POST';
     var r = await api(url, {method:method, body:JSON.stringify(data)});
+    console.log('SAVE RESPONSE:', r);
     if (!r.error) {
   closeModal();
   await loadProducts();
