@@ -855,6 +855,7 @@ function renderProducts(products) {
       + '<div class="prod-actions" style="margin-top:10px">'
       + '<button class="btn-edit" onclick="openModal(\''+p.id+'\')">تعديل</button>'
       + '<button class="btn-toggle'+(p.is_active?' active':'')+'" onclick="toggleProduct(\''+p.id+'\','+!p.is_active+')">'+(p.is_active?'إخفاء':'إظهار')+'</button>'
+      + '<button class="btn-edit" onclick="trashProduct(\''+p.id+'\')">🗑️ حذف</button>'
       + '</div></div></div>';
   }).join('');
 }
@@ -1277,3 +1278,12 @@ async function saveCfg(key) {
 </script>
 </body>
 </html>
+
+<script>
+async function trashProduct(id){
+ if(!confirm('هل تريد نقل المنتج إلى العطور الموقوفة؟')) return;
+ const r=await api('/admin/api/products/'+id,{method:'DELETE'});
+ await loadProducts();
+ alert('تم نقل المنتج إلى العطور الموقوفة');
+}
+</script>
