@@ -1154,15 +1154,17 @@ async function saveProduct() {
       brandName = brandSel.options[brandSel.selectedIndex].text;
     }
     // اسم العطر
+    var newBrandIdFinal = newBrandId || currentBrandId;
     if (nameSel.value === '__new__' || !nameSel.value) {
       var newPerfumeName = document.getElementById('pNameNew').value.trim();
-      if (!newPerfumeName) { alert('اختر أو اكتب اسم العطر'); return; }
-      // احفظ الاسم الجديد
-      await api('/api/brands/'+newBrandId+'/perfumes', {method:'POST', body:JSON.stringify({
-        name: newPerfumeName,
-        gender: document.getElementById('pGender').value,
-        family: document.getElementById('pFamily').value
-      })});
+      if (!newPerfumeName) { alert('اكتب اسم العطر'); return; }
+      if (newBrandIdFinal) {
+        await api('/api/brands/'+newBrandIdFinal+'/perfumes', {method:'POST', body:JSON.stringify({
+          name: newPerfumeName,
+          gender: document.getElementById('pGender').value,
+          family: document.getElementById('pFamily').value
+        })});
+      }
       perfumeName = newPerfumeName;
     } else {
       perfumeName = nameSel.options[nameSel.selectedIndex].text;
