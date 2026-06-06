@@ -1008,9 +1008,17 @@ async function loadNamesForModal(brandId) {
   var d = await r.json();
   var names = d.perfumes || [];
   var sel = document.getElementById('pNameSel');
+  var nameNew = document.getElementById('pNameNew');
   sel.innerHTML = '<option value="">— اختر اسم العطر —</option>' +
     names.map(function(n){ return '<option value="'+n.id+'" data-gender="'+n.gender+'" data-family="'+n.family+'">'+n.name+'</option>'; }).join('') +
     '<option value="__new__">+ إضافة اسم جديد</option>';
+  // لو ما في أسماء — اظهر حقل الكتابة تلقائياً
+  if (!names.length) {
+    nameNew.style.display = 'block';
+    nameNew.placeholder = 'اكتب اسم العطر...';
+  } else {
+    nameNew.style.display = 'none';
+  }
 }
 
 function onNameSelChange() {
