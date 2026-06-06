@@ -1214,8 +1214,9 @@ async function saveProduct() {
   alert('فشل الحفظ: ' + r.error);
 }
   } catch(e) {
-   console.error('SAVE ERROR:', e);
-   alert('فشل الحفظ: ' + (e.message || JSON.stringify(e)));
+  console.error('SAVE ERROR FULL:', e);
+  console.error(e?.stack);
+  alert('فشل الحفظ: ' + (e?.message || e));
   }
   saveBtn.disabled = false;
   saveBtn.textContent = '💾 حفظ المنتج';
