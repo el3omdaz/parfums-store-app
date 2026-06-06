@@ -1199,14 +1199,19 @@ async function saveProduct() {
     var url = editId ? '/admin/api/products/'+editId : '/admin/api/products';
     var method = editId ? 'PATCH' : 'POST';
     var r = await api(url, {method:method, body:JSON.stringify(data)});
-    if (r.product) {
-      closeModal();
-      await loadProducts();
-      filterProducts(currentFilter);
-      showToast('✅ تم حفظ المنتج بنجاح');
-    } else {
-      alert('فشل الحفظ: ' + (r.error || 'خطأ'));
-    }
+    if (!r.error) {
+  closeModal();
+  await loadProducts();
+  filterProducts(currentFilter);
+
+  if (typeof showToast === 'function') {
+    showToast('✅ تم حفظ المنتج بنجاح');
+  } else {
+    alert('تم حفظ المنتج بنجاح');
+  }
+} else {
+  alert('فشل الحفظ: ' + r.error);
+}
   } catch(e) {
     alert('فشل الحفظ');
   }
