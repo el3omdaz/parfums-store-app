@@ -1,0 +1,13 @@
+1. Run in Supabase:
+
+ALTER TABLE products
+ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
+
+2. To hide deleted products from customers, edit routes/products.js:
+after .select('*') add:
+.eq('is_deleted', false)
+
+3. Admin DELETE endpoint added:
+DELETE /admin/api/products/:id
+
+4. Add a trash button in admin.html that calls the endpoint.

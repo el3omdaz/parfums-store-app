@@ -97,6 +97,23 @@ router.patch('/api/products/:id', adminMiddleware, async (req, res) => {
   }
 });
 
+// ===== Move Product To Trash =====
+router.delete('/api/products/:id', adminMiddleware, async (req, res) => {
+  try {
+    const { data } = await getDB()
+      .from('products')
+      .update({ is_deleted: true })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    res.json({ success: true, product: data });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+
 // ===== Config =====
 router.patch('/api/config/:key', adminMiddleware, async (req, res) => {
   try {
