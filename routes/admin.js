@@ -136,3 +136,26 @@ router.delete('/api/products/:id', adminMiddleware, async (req,res)=>{
  res.json({product:data});
  }catch(e){res.status(500).json({error:e.message});}
 });
+
+
+// ===== Trash Products =====
+router.get('/api/products/trash', adminMiddleware, async (req,res)=>{
+ try{
+   const { data } = await getDB().from('products').select('*').eq('is_deleted', true);
+   res.json({ products:data || [] });
+ } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+router.patch('/api/products/:id/restore', adminMiddleware, async (req,res)=>{
+ try{
+   const { data } = await getDB().from('products').update({is_deleted:false}).eq('id',req.params.id).select().single();
+   res.json({ product:data });
+ } catch(e){ res.status(500).json({ error:e.message }); }
+});
+
+router.delete('/api/products/:id/permanent', adminMiddleware, async (req,res)=>{
+ try{
+   await getDB().from('products').delete().eq('id',req.params.id);
+   res.json({ success:true });
+ } catch(e){ res.status(500).json({ error:e.message }); }
+});
