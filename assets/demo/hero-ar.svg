@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#2d180d"/><stop offset="1" stop-color="#0d0a09"/></linearGradient></defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <circle cx="880" cy="220" r="160" fill="#7a4723" opacity=".22"/>
+  <text x="110" y="220" font-size="34" fill="#d5ab71" font-family="Arial">نفحات عربية</text>
+  <text x="110" y="350" font-size="90" fill="#f8efe0" font-family="Arial" font-weight="700">عطور عربية</text>
+  <text x="110" y="430" font-size="34" fill="#ead8bc" font-family="Arial">تركيبات شرقية دافئة بنفحات عود وعنبر وورد</text>
+  <ellipse cx="870" cy="520" rx="210" ry="80" fill="#000" opacity=".35"/>
+  <rect x="730" y="270" rx="26" ry="26" width="270" height="330" fill="#1b120d" stroke="#c08b4e" stroke-width="3"/>
+  <rect x="805" y="190" rx="10" ry="10" width="120" height="90" fill="#2a1a12"/>
+  <rect x="770" y="360" width="190" height="115" rx="4" fill="#241811" stroke="#c08b4e"/>
+  <text x="865" y="414" font-size="36" fill="#d8b17a" text-anchor="middle" font-family="Georgia,serif">PARFUMS</text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 640">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f7f4ee"/><stop offset="1" stop-color="#efe6d9"/></linearGradient>
+    <linearGradient id="glass" x1="0" x2="1"><stop offset="0" stop-color="#fff9ef"/><stop offset="1" stop-color="#d7c6a6"/></linearGradient>
+    <linearGradient id="juice" x1="0" x2="1"><stop offset="0" stop-color="#d5a86e"/><stop offset="1" stop-color="#8b5e31"/></linearGradient>
+  </defs>
+  <rect width="500" height="640" fill="url(#bg)"/>
+  <ellipse cx="250" cy="520" rx="125" ry="28" fill="#d9cebc"/>
+  <rect x="150" y="140" rx="24" ry="24" width="200" height="300" fill="url(#glass)" stroke="#b49567" stroke-width="4"/>
+  <rect x="185" y="78" rx="10" ry="10" width="130" height="70" fill="#b38b57"/>
+  <rect x="165" y="240" width="170" height="105" fill="#f5f0e7" stroke="#b49567"/>
+  <text x="250" y="282" font-size="28" fill="#6d5536" text-anchor="middle" font-family="Georgia,serif">PARFUMS</text>
+  <text x="250" y="318" font-size="20" fill="#7e6a4c" text-anchor="middle" font-family="Arial">SAMPLE 4</text>
+  <rect x="158" y="326" width="184" height="92" fill="url(#juice)" opacity="0.40"/>
+</svg>

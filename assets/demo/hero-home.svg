@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#0d0d0d"/>
+      <stop offset="1" stop-color="#342617"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ecd5a1"/>
+      <stop offset="1" stop-color="#9d7742"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <circle cx="350" cy="360" r="260" fill="none" stroke="#8d6b3f" stroke-opacity=".25"/>
+  <circle cx="350" cy="360" r="180" fill="none" stroke="#8d6b3f" stroke-opacity=".18"/>
+  <rect x="180" y="260" rx="26" ry="26" width="270" height="330" fill="#101010" stroke="#8d6b3f" stroke-width="3"/>
+  <rect x="255" y="180" rx="12" ry="12" width="120" height="90" fill="#121212"/>
+  <rect x="220" y="345" width="190" height="120" rx="4" fill="#181818" stroke="#8d6b3f"/>
+  <text x="315" y="400" font-size="38" fill="#cda76a" text-anchor="middle" font-family="Georgia,serif">PARFUMS</text>
+  <text x="315" y="435" font-size="20" fill="#d3b57f" text-anchor="middle" font-family="Georgia,serif">COLLECTION PRIVÉE</text>
+  <text x="700" y="260" font-size="26" fill="#c6a66e" font-family="Arial">MAISONS FRANÇAISES</text>
+  <text x="700" y="370" font-size="86" fill="#f7f0e5" font-family="Georgia,serif">L'ÉLÉGANCE</text>
+  <text x="700" y="450" font-size="76" fill="#d5b27a" font-family="Georgia,serif" font-style="italic">FRANÇAISE</text>
+  <text x="700" y="515" font-size="28" fill="#f1e8d7" font-family="Arial">مجموعة مختارة من أرقى الدور الفرنسية</text>
+</svg>
